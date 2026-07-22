@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rootkits em eBPF :: 0xGuto</title>
+<meta name="description" content="Como um filtro de pacotes vira uma porta dos fundos no kernel Linux.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<div class="statusbar">
+  <div>
+    <span class="ok">● LINK ESTABELECIDO</span>
+    <span class="sep">|</span>
+    <span>NODE: sp-br-01</span>
+  </div>
+  <div>
+    <span id="local-time">00:00:00</span>
+    <span class="sep">|</span>
+    <span>UPTIME: 118d 04h</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <a href="index.html" class="logo"><span class="bracket">[</span>0xGuto<span class="bracket">]</span></a>
+  <nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="malware.html" class="active">MALWARE</a>
+    <a href="ctf.html">CTF</a>
+    <a href="intel.html">INTEL</a>
+    <a href="#">SOBRE</a>
+  </nav>
+</header>
+
+<article class="post">
+
+  <div class="breadcrumb">
+    <a href="index.html">~</a> / <a href="malware.html">malware_analysis</a> / rootkits_ebpf
+  </div>
+
+  <div class="post-meta-bar">
+    <span>2026-07-02</span>
+    <span class="dot">·</span>
+    <span>9 min de leitura</span>
+    <span class="dot">·</span>
+    <span>post_id: 0x0047</span>
+  </div>
+
+  <h1>Rootkits em eBPF: como um filtro de pacotes vira uma porta dos fundos</h1>
+
+  <div class="post-tags">
+    <span class="tag malware">linux</span>
+    <span class="tag malware">ebpf</span>
+  </div>
+
+  <div class="post-body">
+
+    <p>
+      eBPF nasceu como uma forma segura de instrumentar o kernel sem precisar recompilá-lo.
+      Ferramentas como Falco, Cilium e Datadog usam a mesma capacidade — hooks em kprobes,
+      tracepoints e chamadas de sistema — para observabilidade e defesa. O problema é que
+      essa capacidade é neutra: qualquer coisa que dá visibilidade profunda ao defensor
+      dá o mesmo acesso ao atacante.
+    </p>
+
+    <h2>O caminho de um programa eBPF</h2>
+
+    <p>
+      Um programa eBPF é escrito em um dialeto restrito de C, compilado para bytecode,
+      validado pelo verificador do kernel e então JIT-compilado para código nativo.
+      O verificador prova terminação e segurança de memória — mas não prova <em>intenção</em>.
+      Um programa tecnicamente seguro ainda pode filtrar diretórios, interceptar tráfego
+      ou negar eventos de auditoria silenciosamente.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">observação de laboratório</span>
+      Todos os testes abaixo foram executados em uma VM isolada, sem acesso à rede externa.
+      Não rode isso fora de um ambiente controlado.
+    </div>
+
+    <h3>Hook em getdents64</h3>
+
+    <p>
+      Um dos usos mais diretos é anexar um kprobe à syscall <code>__x64_sys_getdents64</code>,
+      responsável por listar entradas de diretório. Ao filtrar o buffer retornado antes que
+      ele chegue ao userland, é possível esconder arquivos com um padrão de nome específico —
+      sem tocar em nenhuma estrutura do VFS.
+    </p>
+
+    <pre><code>SEC("kprobe/__x64_sys_getdents64")
+int hide_entry(struct pt_regs *ctx) {
+    // captura o buffer de retorno via kretprobe
+    // filtra entradas cujo d_name bate com o padrão alvo
+    return 0;
+}</code></pre>
+
+    <h3>Detecção</h3>
+
+    <p>
+      A defesa prática começa em <code>bpftool prog list</code>, que enumera todos os
+      programas eBPF carregados junto com tipo, ID e nome. Os indicadores mais úteis:
+    </p>
+
+    <ul>
+      <li>Programas sem nome associado</li>
+      <li>Programas carregados a partir de inodes anônimos</li>
+      <li>Tipos incomuns (LSM, SK_SKB) sem uma aplicação legítima correspondente rodando</li>
+    </ul>
+
+    <p>
+      Nenhum desses sinais é definitivo isoladamente — mas a combinação de um programa
+      anônimo do tipo LSM sem processo pai reconhecível é, na prática, quase sempre
+      motivo de investigação.
+    </p>
+
+    <h2>Conclusão</h2>
+
+    <p>
+      eBPF é dual-use por natureza. A mesma API que dá ao Falco visibilidade em tempo real
+      dá a um rootkit a capacidade de mentir para o restante do sistema sobre o que está
+      acontecendo. Entender essa simetria é o primeiro passo pra saber o que procurar.
+    </p>
+
+  </div>
+
+</article>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>&copy; 2026 0xGuto — construído com café e /dev/null</span>
+    <div class="footer-links">
+      <a href="#">github</a>
+      <a href="#">rss</a>
+      <a href="#">contato</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

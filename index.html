@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0xGuto :: root@log</title>
+<meta name="description" content="Análises de malware, writeups de CTF e pesquisa de agentes de ameaça.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<div class="statusbar">
+  <div>
+    <span class="ok">● LINK ESTABELECIDO</span>
+    <span class="sep">|</span>
+    <span>NODE: sp-br-01</span>
+  </div>
+  <div>
+    <span id="local-time">00:00:00</span>
+    <span class="sep">|</span>
+    <span>UPTIME: 118d 04h</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <a href="index.html" class="logo"><span class="bracket">[</span>0xGuto<span class="bracket">]</span></a>
+  <nav class="main-nav">
+    <a href="index.html" class="active">HOME</a>
+    <a href="malware.html">MALWARE</a>
+    <a href="ctf.html">CTF</a>
+    <a href="intel.html">INTEL</a>
+    <a href="#">SOBRE</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <canvas id="netbg"></canvas>
+  <div class="terminal-boot" data-text="> conexão estabelecida... acesso concedido."></div>
+  <h1 class="glitch-hover" data-text="registro de operações ofensivas.">
+    registro de <span class="accent">operações</span> ofensivas.
+  </h1>
+  <p class="lede">
+    Análises técnicas de malware, writeups de CTF e pesquisa sobre agentes de ameaça —
+    documentado no processo, sem filtro de marketing.
+  </p>
+</section>
+
+<section class="stats-bar">
+  <div class="stat-cell">
+    <div class="stat-number" data-target="12">0</div>
+    <div class="stat-label">análises de malware</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" data-target="27">0</div>
+    <div class="stat-label">writeups de ctf</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" data-target="8">0</div>
+    <div class="stat-label">relatórios de intel</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" data-target="6">0</div>
+    <div class="stat-label">insane resolvidos</div>
+  </div>
+</section>
+
+<section class="directories">
+  <div class="section-label">diretórios</div>
+  <div class="dir-grid">
+
+    <a href="malware.html" class="dir-card">
+      <div class="dir-path"><span class="slash">~/</span>malware_analysis</div>
+      <h3>Análise de malware</h3>
+      <p>Engenharia reversa, comportamento em sandbox e internals de kernel.</p>
+      <div class="dir-count">12 posts</div>
+    </a>
+
+    <a href="ctf.html" class="dir-card">
+      <div class="dir-path"><span class="slash">~/</span>ctf_writeups</div>
+      <h3>Writeups de CTF</h3>
+      <p>Soluções documentadas — pwn, forense, rede, crypto.</p>
+      <div class="dir-count">27 posts</div>
+    </a>
+
+    <a href="intel.html" class="dir-card">
+      <div class="dir-path"><span class="slash">~/</span>threat_intel</div>
+      <h3>Threat intelligence</h3>
+      <p>TTPs, mapeamento MITRE ATT&CK e perfis de grupos de ameaça.</p>
+      <div class="dir-count">8 posts</div>
+    </a>
+
+  </div>
+</section>
+
+<section class="log-list">
+  <div class="section-label">var/log/últimas_transmissões</div>
+
+  <div class="log-entry" data-tags="malware">
+    <div class="log-date">2026-07-02</div>
+    <div class="log-title-wrap">
+      <h3><a href="post.html" class="glitch-hover" data-text="Rootkits em eBPF: como um filtro de pacotes vira uma porta dos fundos">Rootkits em eBPF: como um filtro de pacotes vira uma porta dos fundos</a></h3>
+      <p class="log-excerpt">Do verificador do kernel ao bpf_probe_write_user — como a mesma API usada por Falco e Cilium é reaproveitada como plataforma ofensiva.</p>
+    </div>
+    <div class="log-tags"><span class="tag malware">malware</span></div>
+  </div>
+
+  <div class="log-entry" data-tags="ctf">
+    <div class="log-date">2026-06-28</div>
+    <div class="log-title-wrap">
+      <h3><a href="post.html" class="glitch-hover" data-text="Writeup: bypass de PoW automatizado com pwntools">Writeup: bypass de PoW automatizado com pwntools</a></h3>
+      <p class="log-excerpt">Script de automação para desafios de lógica com limite de tempo — fatorial, MDC e contagem de zeros à direita sob pressão de relógio.</p>
+    </div>
+    <div class="log-tags"><span class="tag ctf">ctf</span><span class="diff-badge medium">medium</span></div>
+  </div>
+
+  <div class="log-entry" data-tags="intel">
+    <div class="log-date">2026-06-19</div>
+    <div class="log-title-wrap">
+      <h3><a href="post.html" class="glitch-hover" data-text="Extraindo TTPs de relatórios de ameaça com MITRE ATT&CK">Extraindo TTPs de relatórios de ameaça com MITRE ATT&CK</a></h3>
+      <p class="log-excerpt">Um fluxo estruturado para transformar relatórios de inteligência em técnicas mapeadas e acionáveis.</p>
+    </div>
+    <div class="log-tags"><span class="tag intel">intel</span></div>
+  </div>
+
+  <div class="log-entry" data-tags="malware">
+    <div class="log-date">2026-06-05</div>
+    <div class="log-title-wrap">
+      <h3><a href="post.html" class="glitch-hover" data-text="Triagem forense ao vivo: captura de RAM em um incidente Windows">Triagem forense ao vivo: captura de RAM em um incidente Windows</a></h3>
+      <p class="log-excerpt">Ordem de volatilidade, captura com FTK Imager e primeiros passos de análise com Volatility 3.</p>
+    </div>
+    <div class="log-tags"><span class="tag malware">malware</span></div>
+  </div>
+
+</section>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>&copy; 2026 0xGuto — construído com café e /dev/null</span>
+    <div class="footer-links">
+      <a href="#">github</a>
+      <a href="#">rss</a>
+      <a href="#">contato</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
