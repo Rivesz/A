@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seu Nome — CTI · Reverse Engineering · Malware Analysis · Pwning</title>
-<meta name="description" content="Portfólio técnico de segurança ofensiva/defensiva: threat intelligence, engenharia reversa, análise de malware e exploração de vulnerabilidades.">
+<title>Augusto — CTI · Reverse Engineering · Malware Analysis · Pwning</title>
+<meta name="description" content="Portfólio de segurança ofensiva/defensiva: threat intelligence, engenharia reversa, análise de malware e exploração de binários.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -229,19 +229,14 @@ footer a:hover{ color:var(--red-bright); }
 
   <section id="profile" aria-label="Apresentação">
     <p class="eyebrow">Cyber Threat Intelligence · Reverse Engineering · Malware Analysis · Exploit Dev</p>
-    <h2>Eu quebro binários<br>pra entender <em>quem</em><br>os escreveu.</h2>
-    <p class="lede">Analista ofensivo/defensivo focado em decompor ameaças até o opcode: da hunting de campanhas e atribuição de agentes de ameaça até a engenharia reversa de payloads e o desenvolvimento de exploits para validar impacto real.</p>
+    <h2><br> <em>Portifólio</em><br></h2>
+    <p class="lede"> focado em decompor ameaças até o opcode: da hunting de campanhas e atribuição de agentes de ameaça até a engenharia reversa de payloads e o desenvolvimento de exploits.</p>
 
-    <p class="stat-row">
-      <span><strong>40+</strong><span>Amostras analisadas</span></span>
-      <span><strong>12</strong><span>CVEs / advisories</span></span>
-      <span><strong>05</strong><span>anos de atuação</span></span>
-    </p>
 
     <p class="cta-row">
       <a class="primary" href="#projects">Ver projetos</a>
-      <a href="mailto:voce@dominio.com">Contato direto</a>
-      <a href="https://github.com/seunome" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:augustocybersec@gmail.com">Contato direto</a>
+      <a href="https://github.com/Rivesz" target="_blank" rel="noopener">GitHub</a>
     </p>
   </section>
 
@@ -253,15 +248,15 @@ footer a:hover{ color:var(--red-bright); }
     <ul>
       <li>
         <h3>CTI</h3>
-        <p>Coleta e correlação de IOCs, mapeamento MITRE ATT&CK, atribuição de agentes de ameaça, threat hunting sobre telemetria EDR/SIEM.</p>
+        <p>Coleta e correlação de IOCs, mapeamento MITRE ATT&CK, atribuição de agentes de ameaça,Diamond Model,  threat hunting sobre telemetria EDR/SIEM.</p>
       </li>
       <li>
         <h3>Reverse Engineering</h3>
-        <p>Ghidra, IDA Pro, x64dbg. Desofuscação de código, análise de packers/crypters e reconstrução de lógica em binários PE/ELF.</p>
+        <p>Ghidra, IDA Pro, x64dbg, JADX, Frida. Desofuscação de código, análise de packers/crypters e reconstrução de lógica em binários PE/ELF.</p>
       </li>
       <li>
         <h3>Malware Analysis</h3>
-        <p>Análise estática e dinâmica, sandboxing (Cuckoo/CAPE), extração de configuração, YARA rules, relatórios de comportamento.</p>
+        <p>Análise estática e dinâmica, extração de configuração, YARA rules, relatórios de comportamento.</p>
       </li>
       <li>
         <h3>Pwning / Exploit Dev</h3>
@@ -270,72 +265,6 @@ footer a:hover{ color:var(--red-bright); }
     </ul>
   </section>
 
-  <section id="projects" aria-labelledby="projects-h">
-    <header class="section-head">
-      <h2 id="projects-h">Case Files</h2>
-      <span class="count">03 selecionados</span>
-    </header>
-    <ul>
-
-      <li>
-        <article>
-          <header>
-            <p class="impact tag">Malware Analysis</p>
-            <p class="impact">CONFIG EXTRACTOR PARA LOADER MODULAR</p>
-            <p>Automatizei a extração de C2 e chaves de um loader distribuído via campanha de phishing, cortando o tempo médio de triagem de horas para minutos.</p>
-          </header>
-          <p class="datasheet">
-            <dl>
-              <dt>Família</dt><dd>Loader customizado (não atribuído publicamente)</dd>
-              <dt>Técnica</dt><dd>Análise estática + emulação de rotina de decriptação</dd>
-              <dt>Saída</dt><dd>Script de extração + regras YARA</dd>
-            </dl>
-            <span class="stack"><span>Python</span><span>Ghidra</span><span>YARA</span><span>CyberChef</span></span>
-            <a href="https://github.com/seunome/config-extractor" target="_blank" rel="noopener">→ repositório</a>
-          </p>
-        </article>
-      </li>
-
-      <li>
-        <article>
-          <header>
-            <p class="impact tag">Exploit Dev / Pwning</p>
-            <p class="impact">PoC PARA CVE EM SERVIÇO DE REDE</p>
-            <p>Desenvolvimento de PoC de exploração remota (heap overflow) contra serviço de rede desatualizado, com bypass de ASLR via information leak.</p>
-          </header>
-          <p class="datasheet">
-            <dl>
-              <dt>Alvo</dt><dd>CVE-XXXX-XXXXX</dd>
-              <dt>Classe</dt><dd>Heap overflow → RCE</dd>
-              <dt>Mitigações</dt><dd>ASLR bypass, NX respeitado via ROP</dd>
-            </dl>
-            <span class="stack"><span>C</span><span>pwntools</span><span>GDB/pwndbg</span><span>ROPgadget</span></span>
-            <a href="https://github.com/seunome/cve-poc" target="_blank" rel="noopener">→ repositório</a>
-          </p>
-        </article>
-      </li>
-
-      <li>
-        <article>
-          <header>
-            <p class="impact tag">Cyber Threat Intelligence</p>
-            <p class="impact">RASTREAMENTO DE INFRAESTRUTURA DE C2</p>
-            <p>Pivotamento sobre certificados TLS e favicon hashing para mapear infraestrutura compartilhada entre campanhas, com timeline de atribuição.</p>
-          </header>
-          <p class="datasheet">
-            <dl>
-              <dt>Fontes</dt><dd>Shodan, Censys, VirusTotal, passive DNS</dd>
-              <dt>Framework</dt><dd>MITRE ATT&CK (mapeamento de TTPs)</dd>
-              <dt>Saída</dt><dd>Relatório de atribuição + IOC feed</dd>
-            </dl>
-            <span class="stack"><span>Python</span><span>MISP</span><span>Maltego</span></span>
-            <a href="https://github.com/seunome/c2-tracking" target="_blank" rel="noopener">→ repositório</a>
-          </p>
-        </article>
-      </li>
-
-    </ul>
-  </section>
 
   <section id="writeups" aria-labelledby="writeups-h">
     <header class="section-head">
@@ -378,9 +307,9 @@ footer a:hover{ color:var(--red-bright); }
   <p>© 2026 — Seu Nome. Todos os PoCs publicados apenas para fins educacionais e de pesquisa autorizada.</p>
   <nav aria-label="Redes">
     <ul>
-      <li><a href="mailto:voce@dominio.com">e-mail</a></li>
-      <li><a href="https://github.com/seunome" target="_blank" rel="noopener">github</a></li>
-      <li><a href="https://linkedin.com/in/seunome" target="_blank" rel="noopener">linkedin</a></li>
+      <li><a href="mailto:augustoybersec@gmail.com">e-mail</a></li>
+      <li><a href="https://github.com/Rivesz" target="_blank" rel="noopener">github</a></li>
+      <li><a href="https://www.linkedin.com/in/augustobarr0s/" target="_blank" rel="noopener">linkedin</a></li>
     </ul>
   </nav>
 </footer>
