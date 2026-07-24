@@ -3,151 +3,387 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>0xGuto :: root@log</title>
-<meta name="description" content="Análises de malware, writeups de CTF e pesquisa de agentes de ameaça.">
+<title>Seu Nome — CTI · Reverse Engineering · Malware Analysis · Pwning</title>
+<meta name="description" content="Portfólio técnico de segurança ofensiva/defensiva: threat intelligence, engenharia reversa, análise de malware e exploração de vulnerabilidades.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ===== TOKENS — preto / cinza / vermelho ===== */
+:root{
+  --black:        #08080a;
+  --panel:        #131315;
+  --panel-2:      #1c1c1f;
+  --line:         #2b2b2e;
+  --line-bright:  #3d3d41;
+  --gray:         #86868a;
+  --gray-light:   #c6c6c9;
+  --white:        #f1f1f2;
+  --red:          #e21323;
+  --red-bright:   #ff2f3c;
+  --red-dim:      #5c0d13;
+  --red-glow:     rgba(226,19,35,.4);
+
+  --mono:  "Share Tech Mono", ui-monospace, monospace;
+  --sans:  "Chakra Petch", system-ui, sans-serif;
+
+  --fs-h1: clamp(2.3rem, 1.6rem + 3.4vw, 4.8rem);
+  --fs-h2: clamp(1.5rem, 1.2rem + 1.3vw, 2.3rem);
+  --fs-data: clamp(0.76rem, 0.72rem + 0.15vw, 0.83rem);
+
+  --space-s: clamp(0.75rem, 0.6rem + 0.6vw, 1.25rem);
+  --space-m: clamp(1.5rem, 1.2rem + 1.2vw, 2.5rem);
+  --space-l: clamp(3rem, 2.2rem + 3vw, 6rem);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ color-scheme:dark; scroll-behavior:smooth; }
+body{
+  background:var(--black); color:var(--gray-light);
+  font-family:var(--sans); font-size:1rem; line-height:1.6;
+  position:relative;
+}
+/* scanlines globais, fixas, muito sutis */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:50;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
+  mix-blend-mode:overlay;
+}
+a{ color:inherit; }
+:focus-visible{ outline:2px solid var(--red-bright); outline-offset:3px; }
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+
+.eyebrow{
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--red-bright);
+}
+.eyebrow::before{ content:"// "; color:var(--gray); }
+
+/* ===== HEADER / NAV ===== */
+header{
+  position:sticky; top:0; z-index:20;
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-s);
+  padding:var(--space-s) var(--space-m);
+  background:color-mix(in srgb, var(--black) 90%, transparent);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+}
+header h1{
+  font-family:var(--mono); font-size:1rem; font-weight:400; letter-spacing:.03em; color:var(--gray-light);
+}
+header h1 span{ color:var(--red-bright); }
+header h1 .cursor{ display:inline-block; width:.55em; height:1em; background:var(--red-bright); vertical-align:-.15em; margin-left:.15em; animation:blink 1.1s steps(1) infinite; }
+@keyframes blink{ 50%{ opacity:0; } }
+
+nav ul{ display:flex; gap:var(--space-s); list-style:none; flex-wrap:wrap; font-family:var(--mono); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; }
+nav a{ text-decoration:none; color:var(--gray); padding:.3rem 0; border-bottom:1px solid transparent; }
+nav a:hover, nav a:focus-visible{ color:var(--red-bright); border-color:var(--red-bright); }
+
+/* ===== HERO ===== */
+#profile{
+  min-height:min(88vh, 760px);
+  display:grid; align-content:center; gap:var(--space-m);
+  padding:var(--space-l) var(--space-m);
+  border-bottom:1px solid var(--line);
+  position:relative; overflow:hidden;
+  background:
+    linear-gradient(180deg, transparent 60%, var(--black) 100%),
+    repeating-linear-gradient(115deg, transparent 0 60px, rgba(226,19,35,.035) 60px 61px),
+    var(--black);
+}
+#profile h2{
+  font-family:var(--mono); font-weight:400; font-size:var(--fs-h1);
+  line-height:1.03; letter-spacing:-.01em; max-width:17ch; color:var(--white);
+  text-shadow: 2px 0 var(--red-glow), -1px 0 rgba(160,160,165,.35);
+}
+#profile h2 em{ font-style:normal; color:var(--red-bright); }
+#profile p.lede{ max-width:54ch; color:var(--gray); font-size:1.08rem; }
+
+.stat-row{ display:flex; flex-wrap:wrap; gap:var(--space-m); font-family:var(--mono); margin-top:var(--space-s); }
+.stat-row strong{ display:block; font-size:1.7rem; color:var(--white); }
+.stat-row strong::after{ content:""; display:block; width:2rem; height:2px; background:var(--red); margin-top:.4rem; }
+.stat-row span{ font-size:.72rem; color:var(--gray); text-transform:uppercase; letter-spacing:.09em; }
+
+.cta-row{ display:flex; flex-wrap:wrap; gap:1rem; margin-top:var(--space-s); }
+.cta-row a{
+  font-family:var(--mono); font-size:.83rem; text-decoration:none; color:var(--gray-light);
+  padding:.75rem 1.3rem; border:1px solid var(--line-bright); text-transform:uppercase; letter-spacing:.05em;
+  clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition:border-color .15s, color .15s;
+}
+.cta-row a.primary{ background:var(--red); color:var(--black); font-weight:600; border-color:var(--red); }
+.cta-row a.primary:hover{ background:var(--red-bright); }
+.cta-row a:not(.primary):hover{ border-color:var(--red-bright); color:var(--red-bright); }
+
+/* ===== SECTION SHELL ===== */
+section{ padding:var(--space-l) var(--space-m); border-bottom:1px solid var(--line); }
+.section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-s); margin-bottom:var(--space-m); flex-wrap:wrap; }
+.section-head h2{
+  font-family:var(--mono); font-size:var(--fs-h2); font-weight:400; text-transform:uppercase; letter-spacing:.02em; color:var(--white);
+  position:relative; padding-left:1.1rem;
+}
+.section-head h2::before{ content:""; position:absolute; left:0; top:.15em; bottom:.15em; width:3px; background:var(--red); }
+.section-head .count{ font-family:var(--mono); color:var(--gray); font-size:var(--fs-data); }
+
+/* ===== SKILLS — target-lock frames ===== */
+#skills ul{ list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:var(--space-s); }
+#skills li{
+  background:var(--panel); padding:var(--space-s); position:relative;
+  border:1px solid var(--line);
+}
+#skills li::before, #skills li::after{
+  content:""; position:absolute; width:14px; height:14px; border-color:var(--red); opacity:.75;
+}
+#skills li::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; }
+#skills li::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; }
+#skills h3{ font-family:var(--mono); font-size:.95rem; color:var(--red-bright); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.6rem; }
+#skills p{ color:var(--gray); font-size:.9rem; }
+
+/* ===== PROJECTS — case files com target-lock ===== */
+#projects ul{ list-style:none; display:grid; gap:var(--space-m); }
+#projects article{
+  border:1px solid var(--line); background:var(--panel);
+  display:grid; grid-template-columns:1fr; position:relative;
+}
+@media (min-width:760px){ #projects article{ grid-template-columns:1.2fr 1fr; } }
+#projects article::before, #projects article::after{
+  content:""; position:absolute; width:18px; height:18px; border-color:var(--red-bright); z-index:1;
+}
+#projects article::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; }
+#projects article::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; }
+
+#projects article > header{
+  padding:var(--space-s) var(--space-m); background:var(--panel-2);
+  display:grid; align-content:start; gap:.6rem; border-bottom:1px solid var(--line);
+}
+@media (min-width:760px){ #projects article > header{ border-bottom:none; border-right:1px solid var(--line); } }
+
+.impact{ font-family:var(--mono); font-weight:400; text-transform:uppercase; font-size:clamp(1.1rem, 1rem + .6vw, 1.5rem); line-height:1.15; color:var(--white); letter-spacing:-.005em; }
+.impact.tag{
+  display:inline-block; font-size:.65rem; font-weight:600; letter-spacing:.1em; color:var(--black);
+  background:var(--red); padding:.2rem .6rem; margin-bottom:.5rem;
+  clip-path:polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+#projects article > header > p:not(.tag){ color:var(--gray); font-size:.92rem; max-width:44ch; }
+
+.datasheet{ padding:var(--space-s) var(--space-m); display:grid; gap:.6rem; align-content:start; font-family:var(--mono); font-size:var(--fs-data); }
+.datasheet dl{ display:grid; grid-template-columns:auto 1fr; gap:.3rem var(--space-s); }
+.datasheet dt{ color:var(--gray); text-transform:uppercase; letter-spacing:.06em; }
+.datasheet dd{ color:var(--gray-light); }
+.datasheet .stack{ display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.3rem; }
+.datasheet .stack span{ border:1px solid var(--line-bright); padding:.15rem .55rem; color:var(--gray); font-size:.78rem; }
+.datasheet a{ color:var(--red-bright); text-decoration:none; border-bottom:1px dotted var(--red-dim); }
+.datasheet a:hover{ border-bottom-style:solid; }
+
+/* ===== WRITE-UPS ===== */
+#writeups ol{ list-style:none; display:grid; gap:0; border-top:1px solid var(--line); }
+#writeups li{
+  display:grid; grid-template-columns:6rem 1fr auto; gap:var(--space-s); align-items:baseline;
+  padding:1rem 0; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:.9rem;
+  transition:background .15s;
+}
+#writeups li:hover{ background:rgba(226,19,35,.04); }
+#writeups li time{ color:var(--gray); }
+#writeups li .title{ color:var(--gray-light); font-weight:400; }
+#writeups li .title small{ display:block; color:var(--gray); font-weight:400; font-size:.8rem; margin-top:.15rem; }
+#writeups li a{ text-decoration:none; color:var(--red-bright); white-space:nowrap; }
+#writeups li a::after{ content:" →"; }
+
+/* ===== CERTS ===== */
+#certs ul{ list-style:none; display:flex; flex-wrap:wrap; gap:.7rem; }
+#certs li{
+  font-family:var(--mono); font-size:.85rem; border:1px solid var(--line-bright); color:var(--gray);
+  padding:.55rem 1rem;
+  clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+#certs li strong{ color:var(--white); }
+
+/* ===== FOOTER ===== */
+footer{
+  padding:var(--space-m); display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--space-s);
+  font-family:var(--mono); font-size:.78rem; color:var(--gray);
+}
+footer nav ul{ display:flex; gap:var(--space-s); list-style:none; }
+footer a{ text-decoration:none; color:var(--gray); }
+footer a:hover{ color:var(--red-bright); }
+
+</style>
 </head>
 <body>
 
-<div class="grid-overlay"></div>
-
-<div class="statusbar">
-  <div>
-    <span class="ok">● LINK ESTABELECIDO</span>
-    <span class="sep">|</span>
-    <span>NODE: sp-br-01</span>
-  </div>
-  <div>
-    <span id="local-time">00:00:00</span>
-    <span class="sep">|</span>
-    <span>UPTIME: 118d 04h</span>
-  </div>
-</div>
-
-<header class="site-header">
-  <a href="index.html" class="logo"><span class="bracket">[</span>0xGuto<span class="bracket">]</span></a>
-  <nav class="main-nav">
-    <a href="index.html" class="active">HOME</a>
-    <a href="malware.html">MALWARE</a>
-    <a href="ctf.html">CTF</a>
-    <a href="intel.html">INTEL</a>
-    <a href="#">SOBRE</a>
+<header>
+  <h1>root@<span>seunome</span>:~$<span class="cursor" aria-hidden="true"></span></h1>
+  <nav aria-label="Navegação principal">
+    <ul>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projetos</a></li>
+      <li><a href="#writeups">Write-ups</a></li>
+      <li><a href="#certs">Certificações</a></li>
+      <li><a href="#contact">Contato</a></li>
+    </ul>
   </nav>
 </header>
 
-<section class="hero">
-  <canvas id="netbg"></canvas>
-  <div class="terminal-boot" data-text="> conexão estabelecida... acesso concedido."></div>
-  <h1 class="glitch-hover" data-text="A4ugust0x.">
-    registro de <span class="accent">operações</span> ofensivas.
-  </h1>
-  <p class="lede">
-    Análises técnicas de malware, writeups de CTF e pesquisa sobre agentes de ameaça —
-    documentado no processo, sem filtro de marketing.
-  </p>
-</section>
+<main>
 
-<section class="stats-bar">
-  <div class="stat-cell">
-    <div class="stat-number" data-target="1">0</div>
-    <div class="stat-label">análises de malware</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-number" data-target="0">0</div>
-    <div class="stat-label">writeups de ctf</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-number" data-target="0">0</div>
-    <div class="stat-label">relatórios de intel</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-number" data-target="0">0</div>
-    <div class="stat-label">insane resolvidos</div>
-  </div>
-</section>
+  <section id="profile" aria-label="Apresentação">
+    <p class="eyebrow">Cyber Threat Intelligence · Reverse Engineering · Malware Analysis · Exploit Dev</p>
+    <h2>Eu quebro binários<br>pra entender <em>quem</em><br>os escreveu.</h2>
+    <p class="lede">Analista ofensivo/defensivo focado em decompor ameaças até o opcode: da hunting de campanhas e atribuição de agentes de ameaça até a engenharia reversa de payloads e o desenvolvimento de exploits para validar impacto real.</p>
 
-<section class="directories">
-  <div class="section-label">diretórios</div>
-  <div class="dir-grid">
+    <p class="stat-row">
+      <span><strong>40+</strong><span>Amostras analisadas</span></span>
+      <span><strong>12</strong><span>CVEs / advisories</span></span>
+      <span><strong>05</strong><span>anos de atuação</span></span>
+    </p>
 
-    <a href="malware.html" class="dir-card">
-      <div class="dir-path"><span class="slash">~/</span>malware_analysis</div>
-      <h3>Análise de malware</h3>
-      <p>Engenharia reversa, comportamento em sandbox e internals de kernel.</p>
-      <div class="dir-count">0 posts</div>
-    </a>
+    <p class="cta-row">
+      <a class="primary" href="#projects">Ver projetos</a>
+      <a href="mailto:voce@dominio.com">Contato direto</a>
+      <a href="https://github.com/seunome" target="_blank" rel="noopener">GitHub</a>
+    </p>
+  </section>
 
-    <a href="ctf.html" class="dir-card">
-      <div class="dir-path"><span class="slash">~/</span>ctf_writeups</div>
-      <h3>Writeups de CTF</h3>
-      <p>Soluções documentadas — pwn, forense, rede, crypto.</p>
-      <div class="dir-count">0 posts</div>
-    </a>
+  <section id="skills" aria-labelledby="skills-h">
+    <header class="section-head">
+      <h2 id="skills-h">Áreas técnicas</h2>
+      <span class="count">04 domínios</span>
+    </header>
+    <ul>
+      <li>
+        <h3>CTI</h3>
+        <p>Coleta e correlação de IOCs, mapeamento MITRE ATT&CK, atribuição de agentes de ameaça, threat hunting sobre telemetria EDR/SIEM.</p>
+      </li>
+      <li>
+        <h3>Reverse Engineering</h3>
+        <p>Ghidra, IDA Pro, x64dbg. Desofuscação de código, análise de packers/crypters e reconstrução de lógica em binários PE/ELF.</p>
+      </li>
+      <li>
+        <h3>Malware Analysis</h3>
+        <p>Análise estática e dinâmica, sandboxing (Cuckoo/CAPE), extração de configuração, YARA rules, relatórios de comportamento.</p>
+      </li>
+      <li>
+        <h3>Pwning / Exploit Dev</h3>
+        <p>Exploração de binários (stack/heap), bypass de mitigações (ASLR, DEP, CFG), desenvolvimento de PoCs e fuzzing.</p>
+      </li>
+    </ul>
+  </section>
 
-    <a href="intel.html" class="dir-card">
-      <div class="dir-path"><span class="slash">~/</span>threat_intel</div>
-      <h3>Threat intelligence</h3>
-      <p>TTPs, mapeamento MITRE ATT&CK e perfis de grupos de ameaça.</p>
-      <div class="dir-count">0 posts</div>
-    </a>
+  <section id="projects" aria-labelledby="projects-h">
+    <header class="section-head">
+      <h2 id="projects-h">Case Files</h2>
+      <span class="count">03 selecionados</span>
+    </header>
+    <ul>
 
-  </div>
-</section>
+      <li>
+        <article>
+          <header>
+            <p class="impact tag">Malware Analysis</p>
+            <p class="impact">CONFIG EXTRACTOR PARA LOADER MODULAR</p>
+            <p>Automatizei a extração de C2 e chaves de um loader distribuído via campanha de phishing, cortando o tempo médio de triagem de horas para minutos.</p>
+          </header>
+          <p class="datasheet">
+            <dl>
+              <dt>Família</dt><dd>Loader customizado (não atribuído publicamente)</dd>
+              <dt>Técnica</dt><dd>Análise estática + emulação de rotina de decriptação</dd>
+              <dt>Saída</dt><dd>Script de extração + regras YARA</dd>
+            </dl>
+            <span class="stack"><span>Python</span><span>Ghidra</span><span>YARA</span><span>CyberChef</span></span>
+            <a href="https://github.com/seunome/config-extractor" target="_blank" rel="noopener">→ repositório</a>
+          </p>
+        </article>
+      </li>
 
-<section class="log-list">
-  <div class="section-label">var/log/últimas_transmissões</div>
+      <li>
+        <article>
+          <header>
+            <p class="impact tag">Exploit Dev / Pwning</p>
+            <p class="impact">PoC PARA CVE EM SERVIÇO DE REDE</p>
+            <p>Desenvolvimento de PoC de exploração remota (heap overflow) contra serviço de rede desatualizado, com bypass de ASLR via information leak.</p>
+          </header>
+          <p class="datasheet">
+            <dl>
+              <dt>Alvo</dt><dd>CVE-XXXX-XXXXX</dd>
+              <dt>Classe</dt><dd>Heap overflow → RCE</dd>
+              <dt>Mitigações</dt><dd>ASLR bypass, NX respeitado via ROP</dd>
+            </dl>
+            <span class="stack"><span>C</span><span>pwntools</span><span>GDB/pwndbg</span><span>ROPgadget</span></span>
+            <a href="https://github.com/seunome/cve-poc" target="_blank" rel="noopener">→ repositório</a>
+          </p>
+        </article>
+      </li>
 
-  <div class="log-entry" data-tags="malware">
-    <div class="log-date"></div>
-    <div class="log-title-wrap">
-      <h3><a href="post.html" class="glitch-hover" data-text="Rootkits em eBPF: como um filtro de pacotes vira uma porta dos fundos">Rootkits em eBPF: como um filtro de pacotes vira uma porta dos fundos</a></h3>
-      <p class="log-excerpt">Do verificador do kernel ao bpf_probe_write_user — como a mesma API usada por Falco e Cilium é reaproveitada como plataforma ofensiva.</p>
-    </div>
-    <div class="log-tags"><span class="tag malware">malware</span></div>
-  </div>
+      <li>
+        <article>
+          <header>
+            <p class="impact tag">Cyber Threat Intelligence</p>
+            <p class="impact">RASTREAMENTO DE INFRAESTRUTURA DE C2</p>
+            <p>Pivotamento sobre certificados TLS e favicon hashing para mapear infraestrutura compartilhada entre campanhas, com timeline de atribuição.</p>
+          </header>
+          <p class="datasheet">
+            <dl>
+              <dt>Fontes</dt><dd>Shodan, Censys, VirusTotal, passive DNS</dd>
+              <dt>Framework</dt><dd>MITRE ATT&CK (mapeamento de TTPs)</dd>
+              <dt>Saída</dt><dd>Relatório de atribuição + IOC feed</dd>
+            </dl>
+            <span class="stack"><span>Python</span><span>MISP</span><span>Maltego</span></span>
+            <a href="https://github.com/seunome/c2-tracking" target="_blank" rel="noopener">→ repositório</a>
+          </p>
+        </article>
+      </li>
 
-  <div class="log-entry" data-tags="ctf">
-    <div class="log-date"></div>
-    <div class="log-title-wrap">
-      <h3><a href="post.html" class="glitch-hover" data-text="Writeup: bypass de PoW automatizado com pwntools">Writeup: bypass de PoW automatizado com pwntools</a></h3>
-      <p class="log-excerpt">Script de automação para desafios de lógica com limite de tempo — fatorial, MDC e contagem de zeros à direita sob pressão de relógio.</p>
-    </div>
-    <div class="log-tags"><span class="tag ctf">ctf</span><span class="diff-badge medium">medium</span></div>
-  </div>
+    </ul>
+  </section>
 
-  <div class="log-entry" data-tags="intel">
-    <div class="log-date"></div>
-    <div class="log-title-wrap">
-      <h3><a href="post.html" class="glitch-hover" data-text="Extraindo TTPs de relatórios de ameaça com MITRE ATT&CK">Extraindo TTPs de relatórios de ameaça com MITRE ATT&CK</a></h3>
-      <p class="log-excerpt">Um fluxo estruturado para transformar relatórios de inteligência em técnicas mapeadas e acionáveis.</p>
-    </div>
-    <div class="log-tags"><span class="tag intel">intel</span></div>
-  </div>
+  <section id="writeups" aria-labelledby="writeups-h">
+    <header class="section-head">
+      <h2 id="writeups-h">Write-ups & CTF</h2>
+      <span class="count">log recente</span>
+    </header>
+    <ol>
+      <li>
+        <time datetime="2026-06">2026-06</time>
+        <p class="title">pwn/heap-party — HTB<small>Exploração de use-after-free em alocador customizado</small></p>
+        <a href="writeups/template.html">ler</a>
+      </li>
+      <li>
+        <time datetime="2026-04">2026-04</time>
+        <p class="title">rev/licensed — CTF Nacional<small>Quebra de esquema de licenciamento com VM ofuscada</small></p>
+        <a href="#">ler</a>
+      </li>
+      <li>
+        <time datetime="2026-02">2026-02</time>
+        <p class="title">Análise de campanha — Setor Financeiro<small>Da isca de phishing até a atribuição de infraestrutura</small></p>
+        <a href="#">ler</a>
+      </li>
+    </ol>
+  </section>
 
-  <div class="log-entry" data-tags="malware">
-    <div class="log-date"></div>
-    <div class="log-title-wrap">
-      <h3><a href="post.html" class="glitch-hover" data-text="Triagem forense ao vivo: captura de RAM em um incidente Windows">Triagem forense ao vivo: captura de RAM em um incidente Windows</a></h3>
-      <p class="log-excerpt">Ordem de volatilidade, captura com FTK Imager e primeiros passos de análise com Volatility 3.</p>
-    </div>
-    <div class="log-tags"><span class="tag malware">malware</span></div>
-  </div>
+  <section id="certs" aria-labelledby="certs-h">
+    <header class="section-head">
+      <h2 id="certs-h">Certificações</h2>
+    </header>
+    <ul>
+      <li><strong>OSCP</strong> — Offensive Security</li>
+      <li><strong>GREM</strong> — SANS/GIAC</li>
+      <li><strong>eCXD</strong> — INE</li>
+    </ul>
+  </section>
 
-</section>
+</main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <span>&copy; 2026 0xGuto — construído com café</span>
-    <div class="footer-links">
-      <a href="#">github</a>
-      <a href="#">rss</a>
-      <a href="#">contato -> augustocybersec@gmail.com</a>
-    </div>
-  </div>
+<footer id="contact">
+  <p>© 2026 — Seu Nome. Todos os PoCs publicados apenas para fins educacionais e de pesquisa autorizada.</p>
+  <nav aria-label="Redes">
+    <ul>
+      <li><a href="mailto:voce@dominio.com">e-mail</a></li>
+      <li><a href="https://github.com/seunome" target="_blank" rel="noopener">github</a></li>
+      <li><a href="https://linkedin.com/in/seunome" target="_blank" rel="noopener">linkedin</a></li>
+    </ul>
+  </nav>
 </footer>
 
-<script src="js/main.js"></script>
 </body>
 </html>
