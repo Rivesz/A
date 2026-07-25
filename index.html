@@ -3,34 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Augusto — CTI · Reverse Engineering · Malware Analysis · Pwning</title>
-<meta name="description" content="Portfólio de segurança ofensiva/defensiva: threat intelligence, engenharia reversa, análise de malware e exploração de binários.">
+<title>Seu Nome — CTI · Reverse Engineering · Malware Analysis · Pwning</title>
+<meta name="description" content="Relatórios de análise de malware e papers técnicos: cyber threat intelligence, engenharia reversa e exploração de vulnerabilidades.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
 /* ===== TOKENS — preto / cinza / vermelho ===== */
 :root{
-  --black:        #08080a;
-  --panel:        #131315;
-  --panel-2:      #1c1c1f;
-  --line:         #2b2b2e;
-  --line-bright:  #3d3d41;
-  --gray:         #86868a;
-  --gray-light:   #c6c6c9;
-  --white:        #f1f1f2;
-  --red:          #e21323;
-  --red-bright:   #ff2f3c;
-  --red-dim:      #5c0d13;
-  --red-glow:     rgba(226,19,35,.4);
+  --black:      #0a0a0b;
+  --panel:      #131315;
+  --line:       #2a2a2d;
+  --white:      #f5f5f6;
+  --white-dim:  #e2e2e3;
+  --red:        #e21323;
+  --red-bright: #ff2f3c;
 
-  --mono:  "Share Tech Mono", ui-monospace, monospace;
-  --sans:  "Chakra Petch", system-ui, sans-serif;
+  --display: "Anton", "Chakra Petch", sans-serif;
+  --mono:    "Share Tech Mono", ui-monospace, monospace;
+  --sans:    "Chakra Petch", system-ui, sans-serif;
 
-  --fs-h1: clamp(2.3rem, 1.6rem + 3.4vw, 4.8rem);
-  --fs-h2: clamp(1.5rem, 1.2rem + 1.3vw, 2.3rem);
-  --fs-data: clamp(0.76rem, 0.72rem + 0.15vw, 0.83rem);
+  --fs-h1: clamp(3.2rem, 2rem + 7vw, 8.5rem);
+  --fs-h2: clamp(1.7rem, 1.3rem + 1.8vw, 2.8rem);
 
   --space-s: clamp(0.75rem, 0.6rem + 0.6vw, 1.25rem);
   --space-m: clamp(1.5rem, 1.2rem + 1.2vw, 2.5rem);
@@ -39,173 +34,132 @@
 
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ color-scheme:dark; scroll-behavior:smooth; }
-body{
-  background:var(--black); color:var(--gray-light);
-  font-family:var(--sans); font-size:1rem; line-height:1.6;
-  position:relative;
-}
-/* scanlines globais, fixas, muito sutis */
-body::before{
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:50;
-  background:repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
-  mix-blend-mode:overlay;
-}
+body{ background:var(--black); color:var(--white); font-family:var(--sans); line-height:1.6; overflow-x:hidden; }
 a{ color:inherit; }
 :focus-visible{ outline:2px solid var(--red-bright); outline-offset:3px; }
 @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 
-.eyebrow{
-  font-family:var(--mono); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--red-bright);
+/* faixa diagonal estilo "menu slash" — usada nos títulos de seção */
+.slash{
+  display:inline-block; background:var(--red); color:var(--black);
+  font-family:var(--display); font-weight:400; text-transform:uppercase;
+  letter-spacing:.02em; padding:.25rem 1rem .15rem;
+  transform:skew(-10deg); box-shadow:6px 6px 0 var(--black), 6px 6px 0 1px var(--line);
 }
-.eyebrow::before{ content:"// "; color:var(--gray); }
+.slash span{ display:inline-block; transform:skew(10deg); }
 
 /* ===== HEADER / NAV ===== */
 header{
   position:sticky; top:0; z-index:20;
   display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-s);
   padding:var(--space-s) var(--space-m);
-  background:color-mix(in srgb, var(--black) 90%, transparent);
+  background:color-mix(in srgb, var(--black) 92%, transparent);
   backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line);
+  border-bottom:2px solid var(--red);
 }
-header h1{
-  font-family:var(--mono); font-size:1rem; font-weight:400; letter-spacing:.03em; color:var(--gray-light);
-}
+header h1{ font-family:var(--mono); font-size:1rem; font-weight:400; color:var(--white); }
 header h1 span{ color:var(--red-bright); }
-header h1 .cursor{ display:inline-block; width:.55em; height:1em; background:var(--red-bright); vertical-align:-.15em; margin-left:.15em; animation:blink 1.1s steps(1) infinite; }
-@keyframes blink{ 50%{ opacity:0; } }
-
 nav ul{ display:flex; gap:var(--space-s); list-style:none; flex-wrap:wrap; font-family:var(--mono); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; }
-nav a{ text-decoration:none; color:var(--gray); padding:.3rem 0; border-bottom:1px solid transparent; }
-nav a:hover, nav a:focus-visible{ color:var(--red-bright); border-color:var(--red-bright); }
+nav a{ text-decoration:none; color:var(--white-dim); }
+nav a:hover, nav a:focus-visible{ color:var(--red-bright); }
 
 /* ===== HERO ===== */
 #profile{
-  min-height:min(88vh, 760px);
+  position:relative; min-height:min(85vh, 720px);
   display:grid; align-content:center; gap:var(--space-m);
   padding:var(--space-l) var(--space-m);
   border-bottom:1px solid var(--line);
-  position:relative; overflow:hidden;
-  background:
-    linear-gradient(180deg, transparent 60%, var(--black) 100%),
-    repeating-linear-gradient(115deg, transparent 0 60px, rgba(226,19,35,.035) 60px 61px),
-    var(--black);
+  overflow:hidden;
 }
+/* burst halftone decorativo, ancorado no canto — assinatura P5 */
+#profile::before{
+  content:""; position:absolute; top:-20%; right:-10%; width:70vw; height:70vw; max-width:900px; max-height:900px;
+  background-image:radial-gradient(var(--red) 1.6px, transparent 1.8px);
+  background-size:9px 9px;
+  -webkit-mask-image:radial-gradient(circle, black 0%, transparent 70%);
+          mask-image:radial-gradient(circle, black 0%, transparent 70%);
+  opacity:.55; pointer-events:none; transform:rotate(-8deg);
+}
+#profile > *{ position:relative; z-index:1; }
+
+.eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; color:var(--red-bright); }
+.eyebrow::before{ content:"// "; color:var(--white-dim); }
+
 #profile h2{
-  font-family:var(--mono); font-weight:400; font-size:var(--fs-h1);
-  line-height:1.03; letter-spacing:-.01em; max-width:17ch; color:var(--white);
-  text-shadow: 2px 0 var(--red-glow), -1px 0 rgba(160,160,165,.35);
+  font-family:var(--display); font-weight:400; text-transform:uppercase;
+  font-size:var(--fs-h1); line-height:.95; letter-spacing:.005em; max-width:15ch; color:var(--white);
 }
-#profile h2 em{ font-style:normal; color:var(--red-bright); }
-#profile p.lede{ max-width:54ch; color:var(--gray); font-size:1.08rem; }
+#profile h2 em{ font-style:normal; color:var(--black); background:var(--red); padding:0 .12em; }
+#profile p.lede{ max-width:52ch; color:var(--white-dim); font-size:1.08rem; }
 
 .stat-row{ display:flex; flex-wrap:wrap; gap:var(--space-m); font-family:var(--mono); margin-top:var(--space-s); }
 .stat-row strong{ display:block; font-size:1.7rem; color:var(--white); }
-.stat-row strong::after{ content:""; display:block; width:2rem; height:2px; background:var(--red); margin-top:.4rem; }
-.stat-row span{ font-size:.72rem; color:var(--gray); text-transform:uppercase; letter-spacing:.09em; }
+.stat-row strong::after{ content:""; display:block; width:2rem; height:3px; background:var(--red); margin-top:.4rem; }
+.stat-row span{ font-size:.72rem; color:var(--white-dim); text-transform:uppercase; letter-spacing:.09em; }
 
 .cta-row{ display:flex; flex-wrap:wrap; gap:1rem; margin-top:var(--space-s); }
 .cta-row a{
-  font-family:var(--mono); font-size:.83rem; text-decoration:none; color:var(--gray-light);
-  padding:.75rem 1.3rem; border:1px solid var(--line-bright); text-transform:uppercase; letter-spacing:.05em;
-  clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  transition:border-color .15s, color .15s;
+  font-family:var(--mono); font-size:.83rem; text-decoration:none; color:var(--white);
+  padding:.75rem 1.3rem; border:1px solid var(--line); text-transform:uppercase; letter-spacing:.05em;
+  transition:border-color .15s, color .15s, transform .15s;
 }
-.cta-row a.primary{ background:var(--red); color:var(--black); font-weight:600; border-color:var(--red); }
-.cta-row a.primary:hover{ background:var(--red-bright); }
+.cta-row a.primary{ background:var(--red); color:var(--black); font-weight:700; border-color:var(--red); }
+.cta-row a.primary:hover{ background:var(--red-bright); transform:skew(-4deg); }
 .cta-row a:not(.primary):hover{ border-color:var(--red-bright); color:var(--red-bright); }
 
 /* ===== SECTION SHELL ===== */
 section{ padding:var(--space-l) var(--space-m); border-bottom:1px solid var(--line); }
-.section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-s); margin-bottom:var(--space-m); flex-wrap:wrap; }
-.section-head h2{
-  font-family:var(--mono); font-size:var(--fs-h2); font-weight:400; text-transform:uppercase; letter-spacing:.02em; color:var(--white);
-  position:relative; padding-left:1.1rem;
-}
-.section-head h2::before{ content:""; position:absolute; left:0; top:.15em; bottom:.15em; width:3px; background:var(--red); }
-.section-head .count{ font-family:var(--mono); color:var(--gray); font-size:var(--fs-data); }
+.section-head{ margin-bottom:var(--space-m); }
+.section-head h2{ font-size:var(--fs-h2); }
+.section-head .count{ display:block; margin-top:.6rem; font-family:var(--mono); color:var(--white-dim); font-size:.8rem; }
 
-/* ===== SKILLS — target-lock frames ===== */
-#skills ul{ list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:var(--space-s); }
+/* ===== FOCO TÉCNICO — lista limpa, sem caixas ===== */
+#skills ul{ list-style:none; display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--line); }
 #skills li{
-  background:var(--panel); padding:var(--space-s); position:relative;
-  border:1px solid var(--line);
+  flex:1 1 220px; padding:var(--space-s) var(--space-s) var(--space-s) 0;
+  border-bottom:1px solid var(--line);
 }
-#skills li::before, #skills li::after{
-  content:""; position:absolute; width:14px; height:14px; border-color:var(--red); opacity:.75;
-}
-#skills li::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; }
-#skills li::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; }
-#skills h3{ font-family:var(--mono); font-size:.95rem; color:var(--red-bright); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.6rem; }
-#skills p{ color:var(--gray); font-size:.9rem; }
+#skills li + li{ border-left:1px solid var(--line); padding-left:var(--space-s); }
+#skills h3{ font-family:var(--mono); font-size:.85rem; color:var(--red-bright); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.5rem; }
+#skills p{ color:var(--white-dim); font-size:.9rem; }
 
-/* ===== PROJECTS — case files com target-lock ===== */
-#projects ul{ list-style:none; display:grid; gap:var(--space-m); }
-#projects article{
-  border:1px solid var(--line); background:var(--panel);
-  display:grid; grid-template-columns:1fr; position:relative;
-}
-@media (min-width:760px){ #projects article{ grid-template-columns:1.2fr 1fr; } }
-#projects article::before, #projects article::after{
-  content:""; position:absolute; width:18px; height:18px; border-color:var(--red-bright); z-index:1;
-}
-#projects article::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; }
-#projects article::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; }
-
-#projects article > header{
-  padding:var(--space-s) var(--space-m); background:var(--panel-2);
-  display:grid; align-content:start; gap:.6rem; border-bottom:1px solid var(--line);
-}
-@media (min-width:760px){ #projects article > header{ border-bottom:none; border-right:1px solid var(--line); } }
-
-.impact{ font-family:var(--mono); font-weight:400; text-transform:uppercase; font-size:clamp(1.1rem, 1rem + .6vw, 1.5rem); line-height:1.15; color:var(--white); letter-spacing:-.005em; }
-.impact.tag{
-  display:inline-block; font-size:.65rem; font-weight:600; letter-spacing:.1em; color:var(--black);
-  background:var(--red); padding:.2rem .6rem; margin-bottom:.5rem;
-  clip-path:polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-}
-#projects article > header > p:not(.tag){ color:var(--gray); font-size:.92rem; max-width:44ch; }
-
-.datasheet{ padding:var(--space-s) var(--space-m); display:grid; gap:.6rem; align-content:start; font-family:var(--mono); font-size:var(--fs-data); }
-.datasheet dl{ display:grid; grid-template-columns:auto 1fr; gap:.3rem var(--space-s); }
-.datasheet dt{ color:var(--gray); text-transform:uppercase; letter-spacing:.06em; }
-.datasheet dd{ color:var(--gray-light); }
-.datasheet .stack{ display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.3rem; }
-.datasheet .stack span{ border:1px solid var(--line-bright); padding:.15rem .55rem; color:var(--gray); font-size:.78rem; }
-.datasheet a{ color:var(--red-bright); text-decoration:none; border-bottom:1px dotted var(--red-dim); }
-.datasheet a:hover{ border-bottom-style:solid; }
-
-/* ===== WRITE-UPS ===== */
-#writeups ol{ list-style:none; display:grid; gap:0; border-top:1px solid var(--line); }
-#writeups li{
-  display:grid; grid-template-columns:6rem 1fr auto; gap:var(--space-s); align-items:baseline;
-  padding:1rem 0; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:.9rem;
+/* ===== RELATÓRIOS & PAPERS ===== */
+#reports ul{ list-style:none; display:grid; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:var(--space-m); }
+#reports li{ background:var(--black); }
+#reports article{
+  display:grid; gap:.6rem; padding:var(--space-m); text-decoration:none; color:inherit;
   transition:background .15s;
 }
-#writeups li:hover{ background:rgba(226,19,35,.04); }
-#writeups li time{ color:var(--gray); }
-#writeups li .title{ color:var(--gray-light); font-weight:400; }
-#writeups li .title small{ display:block; color:var(--gray); font-weight:400; font-size:.8rem; margin-top:.15rem; }
-#writeups li a{ text-decoration:none; color:var(--red-bright); white-space:nowrap; }
-#writeups li a::after{ content:" →"; }
+#reports a{ text-decoration:none; color:inherit; display:block; }
+#reports a:hover article, #reports a:focus-visible article{ background:var(--panel); }
+#reports a:hover .report-title, #reports a:focus-visible .report-title{ color:var(--red-bright); }
 
-/* ===== CERTS ===== */
-#certs ul{ list-style:none; display:flex; flex-wrap:wrap; gap:.7rem; }
-#certs li{
-  font-family:var(--mono); font-size:.85rem; border:1px solid var(--line-bright); color:var(--gray);
-  padding:.55rem 1rem;
-  clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+.report-kicker{
+  font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--white-dim);
+  display:flex; gap:1rem; flex-wrap:wrap;
 }
-#certs li strong{ color:var(--white); }
+.report-kicker .type{ color:var(--red-bright); }
+.report-title{
+  font-family:var(--display); font-weight:400; text-transform:uppercase; letter-spacing:.01em;
+  font-size:clamp(1.3rem, 1.1rem + 1vw, 1.9rem); color:var(--white); line-height:1.1;
+  transition:color .15s;
+}
+.report-summary{ color:var(--white-dim); font-size:.95rem; max-width:60ch; }
+
+/* estado vazio */
+.empty-state{
+  margin-top:var(--space-m); padding:var(--space-m); border:1px dashed var(--line);
+  font-family:var(--mono); font-size:.9rem; color:var(--white-dim); text-align:center;
+}
+.empty-state strong{ color:var(--red-bright); }
 
 /* ===== FOOTER ===== */
 footer{
   padding:var(--space-m); display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--space-s);
-  font-family:var(--mono); font-size:.78rem; color:var(--gray);
+  font-family:var(--mono); font-size:.78rem; color:var(--white-dim);
 }
 footer nav ul{ display:flex; gap:var(--space-s); list-style:none; }
-footer a{ text-decoration:none; color:var(--gray); }
+footer a{ text-decoration:none; color:var(--white-dim); }
 footer a:hover{ color:var(--red-bright); }
 
 </style>
@@ -213,13 +167,11 @@ footer a:hover{ color:var(--red-bright); }
 <body>
 
 <header>
-  <h1>root@<span>seunome</span>:~$<span class="cursor" aria-hidden="true"></span></h1>
+  <h1>root@<span>rives</span>:~$</h1>
   <nav aria-label="Navegação principal">
     <ul>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#projects">Projetos</a></li>
-      <li><a href="#writeups">Write-ups</a></li>
-      <li><a href="#certs">Certificações</a></li>
+      <li><a href="#profile">Sobre</a></li>
+      <li><a href="#reports">Relatórios</a></li>
       <li><a href="#contact">Contato</a></li>
     </ul>
   </nav>
@@ -228,88 +180,83 @@ footer a:hover{ color:var(--red-bright); }
 <main>
 
   <section id="profile" aria-label="Apresentação">
-    <p class="eyebrow">Cyber Threat Intelligence · Reverse Engineering · Malware Analysis · Exploit Dev</p>
-    <h2><br> <em>Portifólio</em><br></h2>
-    <p class="lede"> focado em decompor ameaças até o opcode: da hunting de campanhas e atribuição de agentes de ameaça até a engenharia reversa de payloads e o desenvolvimento de exploits.</p>
+    <p class="eyebrow">Cyber Threat Intelligence · Reverse Engineering · Malware Analysis</p>
+    <h2>RIVES</h2>
+    <p class="lede">Publico aqui relatórios de análise de malware e papers técnicos — do comportamento observado em sandbox até a engenharia reversa da rotina crítica da amostra.</p>
 
+    <p class="stat-row">
+      <span><strong>40+</strong><span>Amostras analisadas</span></span>
+      <span><strong>05</strong><span>Relatórios publicados</span></span>
+      <span><strong>05</strong><span>Anos de atuação</span></span>
+    </p>
 
     <p class="cta-row">
-      <a class="primary" href="#projects">Ver projetos</a>
-      <a href="mailto:augustocybersec@gmail.com">Contato direto</a>
-      <a href="https://github.com/Rivesz" target="_blank" rel="noopener">GitHub</a>
+      <a class="primary" href="#reports">Ver relatórios</a>
+      <a href="mailto:rives@dominio.com">Contato direto</a>
+      <a href="https://github.com/rives" target="_blank" rel="noopener">GitHub</a>
     </p>
   </section>
 
   <section id="skills" aria-labelledby="skills-h">
     <header class="section-head">
-      <h2 id="skills-h">Áreas técnicas</h2>
-      <span class="count">04 domínios</span>
+      <p class="slash"><span>Foco técnico</span></p>
     </header>
     <ul>
       <li>
         <h3>CTI</h3>
-        <p>Coleta e correlação de IOCs, mapeamento MITRE ATT&CK, atribuição de agentes de ameaça,Diamond Model,  threat hunting sobre telemetria EDR/SIEM.</p>
+        <p>IOCs, mapeamento MITRE ATT&CK, atribuição de agentes de ameaça, threat hunting.</p>
       </li>
       <li>
         <h3>Reverse Engineering</h3>
-        <p>Ghidra, IDA Pro, x64dbg, JADX, Frida. Desofuscação de código, análise de packers/crypters e reconstrução de lógica em binários PE/ELF.</p>
+        <p>Ghidra, IDA Pro, x64dbg. Desofuscação, packers/crypters, reconstrução de lógica.</p>
       </li>
       <li>
         <h3>Malware Analysis</h3>
-        <p>Análise estática e dinâmica, extração de configuração, YARA rules, relatórios de comportamento.</p>
-      </li>
-      <li>
-        <h3>Pwning / Exploit Dev</h3>
-        <p>Exploração de binários (stack/heap), bypass de mitigações (ASLR, DEP, CFG), desenvolvimento de PoCs e fuzzing.</p>
+        <p>Análise estática e dinâmica, sandboxing, extração de configuração, YARA rules.</p>
       </li>
     </ul>
   </section>
 
-
-  <section id="writeups" aria-labelledby="writeups-h">
+  <section id="reports" aria-labelledby="reports-h">
     <header class="section-head">
-      <h2 id="writeups-h">Write-ups & CTF</h2>
-      <span class="count">log recente</span>
+      <p class="slash"><span id="reports-h">Relatórios &amp; Papers</span></p>
+      <span class="count">Análises de malware e pesquisas publicadas por mim</span>
     </header>
-    <ol>
-      <li>
-        <time datetime="2026-06">2026-06</time>
-        <p class="title">pwn/heap-party — HTB<small>Exploração de use-after-free em alocador customizado</small></p>
-        <a href="writeups/template.html">ler</a>
-      </li>
-      <li>
-        <time datetime="2026-04">2026-04</time>
-        <p class="title">rev/licensed — CTF Nacional<small>Quebra de esquema de licenciamento com VM ofuscada</small></p>
-        <a href="#">ler</a>
-      </li>
-      <li>
-        <time datetime="2026-02">2026-02</time>
-        <p class="title">Análise de campanha — Setor Financeiro<small>Da isca de phishing até a atribuição de infraestrutura</small></p>
-        <a href="#">ler</a>
-      </li>
-    </ol>
-  </section>
 
-  <section id="certs" aria-labelledby="certs-h">
-    <header class="section-head">
-      <h2 id="certs-h">Certificações</h2>
-    </header>
-    <ul>
-      <li><strong>OSCP</strong> — Offensive Security</li>
-      <li><strong>GREM</strong> — SANS/GIAC</li>
-      <li><strong>eCXD</strong> — INE</li>
-    </ul>
+    <!--
+      COMO ADICIONAR UM RELATÓRIO NOVO:
+      1. Duplique writeups/template.html e escreva o conteúdo real.
+      2. Adicione um <li> aqui dentro de <ul>, seguindo o modelo abaixo:
+
+      <li>
+        <a href="writeups/nome-do-arquivo.html">
+          <article>
+            <p class="report-kicker">
+              <span class="type">Malware Analysis</span>
+              <time datetime="2026-07">Jul 2026</time>
+            </p>
+            <p class="report-title">Nome do relatório / família da amostra</p>
+            <p class="report-summary">Resumo de uma linha sobre o achado principal.</p>
+          </article>
+        </a>
+      </li>
+
+      Remova o .empty-state abaixo assim que tiver pelo menos um relatório real.
+    -->
+    <ul></ul>
+
+    <p class="empty-state"><strong>Nenhum relatório publicado ainda.</strong><br>O primeiro vem por aqui assim que estiver pronto.</p>
   </section>
 
 </main>
 
 <footer id="contact">
-  <p>© 2026 — Seu Nome. Todos os PoCs publicados apenas para fins educacionais e de pesquisa autorizada.</p>
+  <p>© 2026 — Seu Nome. Todo conteúdo publicado apenas para fins educacionais e de pesquisa autorizada.</p>
   <nav aria-label="Redes">
     <ul>
-      <li><a href="mailto:augustoybersec@gmail.com">e-mail</a></li>
-      <li><a href="https://github.com/Rivesz" target="_blank" rel="noopener">github</a></li>
-      <li><a href="https://www.linkedin.com/in/augustobarr0s/" target="_blank" rel="noopener">linkedin</a></li>
+      <li><a href="mailto:rives@dominio.com">e-mail</a></li>
+      <li><a href="https://github.com/rives" target="_blank" rel="noopener">github</a></li>
+      <li><a href="https://linkedin.com/in/rives" target="_blank" rel="noopener">linkedin</a></li>
     </ul>
   </nav>
 </footer>

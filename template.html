@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ========================================================
+  1) TROQUE O TÍTULO DA ABA E A DESCRIÇÃO ABAIXO
+======================================================== -->
+<title>Nome do Relatório — Rives</title>
+<meta name="description" content="Resumo de uma linha sobre o relatório (aparece em buscadores e ao compartilhar o link).">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0b; --panel:#131315; --line:#2a2a2d;
+  --white:#f5f5f6; --white-dim:#e2e2e3;
+  --red:#e21323; --red-bright:#ff2f3c;
+  --display:"Anton","Chakra Petch",sans-serif;
+  --mono:"Share Tech Mono", ui-monospace, monospace;
+  --sans:"Chakra Petch", system-ui, sans-serif;
+  --space-s:clamp(0.75rem,0.6rem + 0.6vw,1.25rem);
+  --space-m:clamp(1.5rem,1.2rem + 1.2vw,2.5rem);
+  --space-l:clamp(2.5rem,2rem + 2.5vw,5rem);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ color-scheme:dark; }
+body{ background:var(--black); color:var(--white-dim); font-family:var(--sans); line-height:1.7; font-size:1.02rem; }
+a{ color:var(--red-bright); }
+:focus-visible{ outline:2px solid var(--red-bright); outline-offset:3px; }
+
+header.top{
+  padding:var(--space-s) var(--space-m); border-bottom:2px solid var(--red);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;
+}
+header.top a{ font-family:var(--mono); font-size:.85rem; text-decoration:none; color:var(--white-dim); }
+header.top a:hover{ color:var(--red-bright); }
+
+main{ max-width:74ch; margin:0 auto; padding:var(--space-l) var(--space-m); }
+
+.slash{
+  display:inline-block; background:var(--red); color:var(--black);
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.02em;
+  padding:.2rem .8rem .1rem; transform:skew(-10deg);
+  box-shadow:5px 5px 0 var(--black), 5px 5px 0 1px var(--line);
+  font-size:.78rem; margin-bottom:1rem;
+}
+.slash span{ display:inline-block; transform:skew(10deg); }
+
+h1{
+  font-family:var(--display); font-weight:400; text-transform:uppercase;
+  font-size:clamp(2rem,1.6rem + 2.2vw,3.2rem); line-height:1.02; letter-spacing:.01em;
+  color:var(--white); margin-bottom:1rem;
+}
+.meta{ font-family:var(--mono); font-size:.85rem; color:var(--white-dim); display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:var(--space-m); }
+.meta strong{ color:var(--white); }
+
+.summary{
+  padding:var(--space-s) var(--space-m); background:var(--panel); border-left:3px solid var(--red);
+  margin-bottom:var(--space-l);
+}
+.summary dt{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--red-bright); margin-top:.7rem; }
+.summary dt:first-child{ margin-top:0; }
+.summary dd{ color:var(--white); }
+
+article section{ margin-top:var(--space-l); }
+article h2{
+  font-family:var(--display); font-weight:400; text-transform:uppercase; font-size:1.4rem;
+  color:var(--white); border-bottom:1px solid var(--line); padding-bottom:.6rem; margin-bottom:1.2rem;
+}
+article p{ margin-bottom:1rem; }
+article p.muted{ color:var(--white-dim); font-size:.9rem; }
+
+pre{ background:var(--panel); border:1px solid var(--line); padding:var(--space-s); overflow-x:auto; font-family:var(--mono); font-size:.85rem; margin:1rem 0; }
+code{ font-family:var(--mono); background:var(--panel); padding:.1rem .35rem; font-size:.9em; }
+pre code{ background:none; padding:0; }
+
+/* ===== PRINTS DA PESQUISA =====
+   Use <figure> pra cada print. O caption é OBRIGATÓRIO — explique o que a
+   imagem mostra, porque um print sem contexto não ajuda ninguém a validar
+   sua análise. Coloque quantos precisar em cada seção. */
+figure{ margin:1.5rem 0; border:1px solid var(--line); background:var(--panel); }
+figure img{ width:100%; display:block; }
+figcaption{
+  font-family:var(--mono); font-size:.8rem; color:var(--white-dim);
+  padding:.6rem .9rem; border-top:1px solid var(--line);
+}
+figcaption strong{ color:var(--red-bright); }
+
+.ioc-table{ width:100%; border-collapse:collapse; margin:1rem 0; font-family:var(--mono); font-size:.85rem; }
+.ioc-table th, .ioc-table td{ border:1px solid var(--line); padding:.5rem .7rem; text-align:left; }
+.ioc-table th{ background:var(--panel); color:var(--red-bright); text-transform:uppercase; font-size:.7rem; letter-spacing:.06em; }
+
+footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-align:center; font-family:var(--mono); font-size:.8rem; color:var(--white-dim); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="../index.html">← voltar ao portfólio</a>
+  <a href="https://github.com/rives" target="_blank" rel="noopener">github ↗</a>
+</header>
+
+<main>
+  <article>
+    <header>
+      <!-- 2) TROQUE O TIPO (Malware Analysis / Paper / CTI Report) -->
+      <p class="slash"><span>Malware Analysis</span></p>
+
+      <!-- 3) TÍTULO DO RELATÓRIO -->
+      <h1>Título do Relatório / Família da Amostra</h1>
+
+      <!-- 4) METADADOS — apague o que não usar -->
+      <p class="meta">
+        <span><strong>Data:</strong> 2026-07-25</span>
+        <span><strong>SHA256:</strong> a1b2c3...</span>
+        <span><strong>Tipo:</strong> PE32 / Loader</span>
+      </p>
+    </header>
+
+    <!-- 5) RESUMO EXECUTIVO — o leitor decide se vale ler o resto por aqui -->
+    <dl class="summary">
+      <dt>Resumo</dt>
+      <dd>Uma ou duas frases sobre o que a amostra faz e por que ela importa.</dd>
+      <dt>Veredito</dt>
+      <dd>Malicioso — família X, capacidade Y</dd>
+      <dt>Ferramentas</dt>
+      <dd>Ghidra, x64dbg, YARA, CAPE Sandbox</dd>
+    </dl>
+
+    <!-- 6) A PARTIR DAQUI, ESCREVA LIVREMENTE.
+         Mantenha o padrão: um <h2> por etapa da análise, texto explicando
+         o que você fez e por que, e <figure> sempre que tiver um print
+         que sustente o ponto (string suspeita, seção do PE, breakpoint
+         no debugger, tráfego de rede capturado, etc.) -->
+
+    <section>
+      <h2>Triagem inicial</h2>
+      <p>Como a amostra foi obtida, primeira impressão, hash, packer detectado etc.</p>
+      <pre><code>$ file sample.bin
+sample.bin: PE32 executable (GUI) Intel 80386, for MS Windows</code></pre>
+
+      <!-- PRINT: troque "assets/exemplo1.png" pelo caminho real da sua imagem -->
+      <figure>
+        <img src="assets/exemplo1.png" alt="Descreva a imagem para acessibilidade e SEO">
+        <figcaption><strong>Fig. 1 —</strong> o que esse print mostra e por que ele importa para a análise.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Análise estática</h2>
+      <p>Strings relevantes, imports suspeitos, seções anômalas, indícios de ofuscação.</p>
+
+      <figure>
+        <img src="assets/exemplo2.png" alt="Descreva a imagem">
+        <figcaption><strong>Fig. 2 —</strong> ex.: strings suspeitas encontradas no binário via <code>strings</code>/Ghidra.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Análise dinâmica</h2>
+      <p>Comportamento em sandbox: processos criados, persistência, comunicação de rede.</p>
+
+      <table class="ioc-table">
+        <thead><tr><th>Tipo</th><th>Valor</th><th>Contexto</th></tr></thead>
+        <tbody>
+          <tr><td>Domínio C2</td><td>exemplo[.]com</td><td>Beacon a cada 60s</td></tr>
+          <tr><td>Mutex</td><td>Global\ExemploMutex</td><td>Evita reinfecção</td></tr>
+        </tbody>
+      </table>
+
+      <figure>
+        <img src="assets/exemplo3.png" alt="Descreva a imagem">
+        <figcaption><strong>Fig. 3 —</strong> ex.: captura de tráfego de rede no Wireshark mostrando o beacon.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Engenharia reversa da rotina crítica</h2>
+      <p>Detalhe do algoritmo de decriptação/config, com pseudocódigo se fizer sentido.</p>
+      <pre><code>for i in range(len(data)):
+    data[i] ^= key[i % len(key)]</code></pre>
+
+      <figure>
+        <img src="assets/exemplo4.png" alt="Descreva a imagem">
+        <figcaption><strong>Fig. 4 —</strong> ex.: função decompilada no Ghidra/IDA com a rotina destacada.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Conclusão &amp; recomendações</h2>
+      <p>Impacto, atribuição (se houver), e recomendações de detecção/mitigação (regra YARA, assinatura de rede etc.).</p>
+    </section>
+  </article>
+</main>
+
+<footer class="bottom">
+  <p>Publicado apenas para fins educacionais e de pesquisa autorizada.</p>
+</footer>
+
+</body>
+</html>
