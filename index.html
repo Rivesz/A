@@ -1,311 +1,513 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Augusto — CTI · Reverse Engineering · Malware Analysis · Pwning</title>
+
 <meta name="description" content="Relatórios de análise de malware e papers técnicos: cyber threat intelligence, engenharia reversa e exploração de vulnerabilidades.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Share+Tech+Mono&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 
+
 /* ===== TOKENS — preto / cinza / vermelho ===== */
+
 :root{
+
   --black:      #0a0a0b;
+
   --panel:      #131315;
+
   --line:       #2a2a2d;
+
   --white:      #f5f5f6;
+
   --white-dim:  #e2e2e3;
+
   --red:        #e21323;
+
   --red-bright: #ff2f3c;
 
+
   --display: "Anton", "Chakra Petch", sans-serif;
+
   --mono:    "Share Tech Mono", ui-monospace, monospace;
+
   --sans:    "Chakra Petch", system-ui, sans-serif;
 
+
   --fs-h1: clamp(3.2rem, 2rem + 7vw, 8.5rem);
+
   --fs-h2: clamp(1.7rem, 1.3rem + 1.8vw, 2.8rem);
 
+
   --space-s: clamp(0.75rem, 0.6rem + 0.6vw, 1.25rem);
+
   --space-m: clamp(1.5rem, 1.2rem + 1.2vw, 2.5rem);
+
   --space-l: clamp(3rem, 2.2rem + 3vw, 6rem);
+
 }
+
 
 *{ box-sizing:border-box; margin:0; padding:0; }
+
 html{ color-scheme:dark; scroll-behavior:smooth; }
+
 body{ background:var(--black); color:var(--white); font-family:var(--sans); line-height:1.6; overflow-x:hidden; }
+
 a{ color:inherit; }
+
 :focus-visible{ outline:2px solid var(--red-bright); outline-offset:3px; }
+
 @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 
+
 /* faixa diagonal estilo "menu slash" — usada nos títulos de seção */
+
 .slash{
+
   display:inline-block; background:var(--red); color:var(--black);
+
   font-family:var(--display); font-weight:400; text-transform:uppercase;
+
   letter-spacing:.02em; padding:.25rem 1rem .15rem;
+
   transform:skew(-10deg); box-shadow:6px 6px 0 var(--black), 6px 6px 0 1px var(--line);
+
 }
+
 .slash span{ display:inline-block; transform:skew(10deg); }
 
+
 /* ===== HEADER / NAV ===== */
+
 header{
+
   position:sticky; top:0; z-index:20;
+
   display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-s);
+
   padding:var(--space-s) var(--space-m);
+
   background:color-mix(in srgb, var(--black) 92%, transparent);
-  backdrop-filter:blur(66px);
+
+  backdrop-filter:blur(6px);
+
   border-bottom:2px solid var(--red);
+
 }
+
 header h1{ font-family:var(--mono); font-size:1rem; font-weight:400; color:var(--white); }
+
 header h1 span{ color:var(--red-bright); }
+
 nav ul{ display:flex; gap:var(--space-s); list-style:none; flex-wrap:wrap; font-family:var(--mono); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; }
+
 nav a{ text-decoration:none; color:var(--white-dim); }
+
 nav a:hover, nav a:focus-visible{ color:var(--red-bright); }
 
+
 /* ===== HERO ===== */
+
 #profile{
+
   position:relative; min-height:min(85vh, 720px);
-  display:grid; grid-template-columns: 1fr; align-content:center; gap:var(--space-m);
+
+  display:grid; align-content:center; gap:var(--space-m);
+
   padding:var(--space-l) var(--space-m);
+
   border-bottom:1px solid var(--line);
+
   overflow:hidden;
+
 }
 
 /* burst halftone decorativo, ancorado no canto — assinatura P5 */
-#profile::before{
-  content:""; position:absolute; top:-20%; right:-10%; width:70vw; height:70vw; max-width:900px; max-height:900px;
-  background-image:radial-gradient(var(--red) 1.6px, transparent 1.8px);
-  background-size:9px 9px;
-  -webkit-mask-image:radial-gradient(circle, black 0%, transparent 70%);
-          mask-image:radial-gradient(circle, black 0%, transparent 70%);
-  opacity:.55; pointer-events:none; transform:rotate(-8deg);
-}
 
-/* Estilo para a imagem de identidade visual do portfólio (master graphic) */
-.portfolio-identity-image {
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
-  display: block;
-  border: 1px solid var(--line);
-  box-shadow: 10px 10px 0 var(--panel);
+#profile::before{
+
+  content:""; position:absolute; top:-20%; right:-10%; width:70vw; height:70vw; max-width:900px; max-height:900px;
+
+  background-image:radial-gradient(var(--red) 1.6px, transparent 1.8px);
+
+  background-size:9px 9px;
+
+  -webkit-mask-image:radial-gradient(circle, black 0%, transparent 70%);
+
+          mask-image:radial-gradient(circle, black 0%, transparent 70%);
+
+  opacity:.55; pointer-events:none; transform:rotate(-8deg);
+
 }
 
 #profile > *{ position:relative; z-index:1; }
 
+
 .eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; color:var(--red-bright); }
+
 .eyebrow::before{ content:"// "; color:var(--white-dim); }
 
+
 #profile h2{
+
   font-family:var(--display); font-weight:400; text-transform:uppercase;
+
   font-size:var(--fs-h1); line-height:.95; letter-spacing:.005em; max-width:15ch; color:var(--white);
+
 }
+
 #profile h2 em{ font-style:normal; color:var(--black); background:var(--red); padding:0 .12em; }
+
 #profile p.lede{ max-width:52ch; color:var(--white-dim); font-size:1.08rem; }
 
+
 .stat-row{ display:flex; flex-wrap:wrap; gap:var(--space-m); font-family:var(--mono); margin-top:var(--space-s); }
+
 .stat-row strong{ display:block; font-size:1.7rem; color:var(--white); }
+
 .stat-row strong::after{ content:""; display:block; width:2rem; height:3px; background:var(--red); margin-top:.4rem; }
+
 .stat-row span{ font-size:.72rem; color:var(--white-dim); text-transform:uppercase; letter-spacing:.09em; }
 
+
 .cta-row{ display:flex; flex-wrap:wrap; gap:1rem; margin-top:var(--space-s); }
+
 .cta-row a{
+
   font-family:var(--mono); font-size:.83rem; text-decoration:none; color:var(--white);
+
   padding:.75rem 1.3rem; border:1px solid var(--line); text-transform:uppercase; letter-spacing:.05em;
+
   transition:border-color .15s, color .15s, transform .15s;
+
 }
+
 .cta-row a.primary{ background:var(--red); color:var(--black); font-weight:700; border-color:var(--red); }
+
 .cta-row a.primary:hover{ background:var(--red-bright); transform:skew(-4deg); }
+
 .cta-row a:not(.primary):hover{ border-color:var(--red-bright); color:var(--red-bright); }
 
+
 /* ===== SECTION SHELL ===== */
+
 section{ padding:var(--space-l) var(--space-m); border-bottom:1px solid var(--line); }
+
 .section-head{ margin-bottom:var(--space-m); }
+
 .section-head h2{ font-size:var(--fs-h2); }
+
 .section-head .count{ display:block; margin-top:.6rem; font-family:var(--mono); color:var(--white-dim); font-size:.8rem; }
 
+
 /* ===== FOCO TÉCNICO — lista limpa, sem caixas ===== */
+
 #skills ul{ list-style:none; display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--line); }
+
 #skills li{
+
   flex:1 1 220px; padding:var(--space-s) var(--space-s) var(--space-s) 0;
+
   border-bottom:1px solid var(--line);
+
 }
+
 #skills li + li{ border-left:1px solid var(--line); padding-left:var(--space-s); }
+
 #skills h3{ font-family:var(--mono); font-size:.85rem; color:var(--red-bright); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.5rem; }
+
 #skills p{ color:var(--white-dim); font-size:.9rem; }
 
+
 /* ===== RELATÓRIOS & PAPERS ===== */
+
 #reports ul{ list-style:none; display:grid; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:var(--space-m); }
+
 #reports li{ background:var(--black); }
 
-/* Grid para exibir a imagem do relatório e o texto lado a lado */
 #reports article{
-  display:grid; grid-template-columns: 100px 1fr; gap:var(--space-m); padding:var(--space-m); text-decoration:none; color:inherit;
+
+  display:grid; gap:.6rem; padding:var(--space-m); text-decoration:none; color:inherit;
+
   transition:background .15s;
+
 }
+
 #reports a{ text-decoration:none; color:inherit; display:block; }
+
 #reports a:hover article, #reports a:focus-visible article{ background:var(--panel); }
+
 #reports a:hover .report-title, #reports a:focus-visible .report-title{ color:var(--red-bright); }
 
-/* Estilo para a imagem embutida na listagem do relatório */
-.report-visual {
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--line);
-}
-
-/* Ajuste para o texto do relatório não transbordar */
-.report-text-listing { display: grid; gap:.6rem; min-width: 0; }
 
 .report-kicker{
+
   font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--white-dim);
+
   display:flex; gap:1rem; flex-wrap:wrap;
+
 }
+
 .report-kicker .type{ color:var(--red-bright); }
+
 .report-title{
+
   font-family:var(--display); font-weight:400; text-transform:uppercase; letter-spacing:.01em;
+
   font-size:clamp(1.3rem, 1.1rem + 1vw, 1.9rem); color:var(--white); line-height:1.1;
+
   transition:color .15s;
+
 }
+
 .report-summary{ color:var(--white-dim); font-size:.95rem; max-width:60ch; }
 
+
 /* estado vazio */
+
 .empty-state{
+
   margin-top:var(--space-m); padding:var(--space-m); border:1px dashed var(--line);
+
   font-family:var(--mono); font-size:.9rem; color:var(--white-dim); text-align:center;
+
 }
+
 .empty-state strong{ color:var(--red-bright); }
 
+
 /* ===== FOOTER ===== */
+
 footer{
+
   padding:var(--space-m); display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--space-s);
+
   font-family:var(--mono); font-size:.78rem; color:var(--white-dim);
+
 }
+
 footer nav ul{ display:flex; gap:var(--space-s); list-style:none; }
+
 footer a{ text-decoration:none; color:var(--white-dim); }
+
 footer a:hover{ color:var(--red-bright); }
 
+
 </style>
+
 </head>
+
 <body>
 
+
 <header>
+
   <h1>root@<span>rives</span>:~$</h1>
+
   <nav aria-label="Navegação principal">
+
     <ul>
+
       <li><a href="#profile">Sobre</a></li>
+
       <li><a href="#reports">Relatórios</a></li>
+
     </ul>
+
   </nav>
+
 </header>
+
 
 <main>
 
+
   <section id="profile" aria-label="Apresentação">
+
     <p class="eyebrow">Cyber Threat Intelligence · Reverse Engineering · Malware Analysis</p>
-    
-    <!-- IMAGEM DE IDENTIDADE DO PORTFÓLIO: Mostrando a arte mestre gerada para definir a identidade VOID.NET/GOTHIC.HACKING -->
-    <img src="https://image.noelshack.com/fichiers/2026/30/1/1721671568-image-4.png" alt="VOID.NET / GOTHIC.HACKING / PORTFOLIO Master Graphic" class="portfolio-identity-image">
-    
+
     <h2>RIVES</h2>
+
     <p class="lede">Publico aqui relatórios de análise de malware e papers técnicos, do comportamento observado em malwares e binários.</p>
 
+
     <p class="stat-row">
+
       <span><strong>1</strong><span>Amostras analisadas</span></span>
+
     </p>
+
 
     <p class="cta-row">
+
       <a class="primary" href="#reports">Ver relatórios</a>
+
       <a href="mailto:augustocybersec@gmail.com">Contato direto</a>
+
       <a href="https://github.com/Rivesz" target="_blank" rel="noopener">GitHub</a>
+
     </p>
+
   </section>
+
 
   <section id="skills" aria-labelledby="skills-h">
+
     <header class="section-head">
+
       <p class="slash"><span>Foco técnico</span></p>
+
     </header>
+
     <ul>
+
       <li>
+
         <h3>CTI</h3>
+
         <p>IOCs, mapeamento MITRE ATT&CK, atribuição de agentes de ameaça, threat hunting.</p>
+
       </li>
+
       <li>
+
         <h3>Reverse Engineering</h3>
+
         <p>Ghidra, IDA Pro, x64dbg. Desofuscação, packers/crypters, reconstrução de lógica.</p>
+
       </li>
+
       <li>
+
         <h3>Malware Analysis</h3>
+
         <p>Análise estática e dinâmica, sandboxing, extração de configuração, YARA rules.</p>
+
       </li>
+
     </ul>
+
   </section>
 
+
   <section id="reports" aria-labelledby="reports-h">
+
     <header class="section-head">
+
       <p class="slash"><span id="reports-h">Relatórios &amp; Papers</span></p>
+
       <span class="count">Análises de malware e pesquisas publicadas por mim</span>
+
     </header>
 
+
     <!--
+
       COMO ADICIONAR UM RELATÓRIO NOVO:
+
       1. Duplique writeups/template.html e escreva o conteúdo real.
+
       2. Adicione um <li> aqui dentro de <ul>, seguindo o modelo abaixo:
 
+
       <li>
+
         <a href="writeups/nome-do-arquivo.html">
+
           <article>
-            <!-- Adicione uma imagem embutida para cada relatório -->
-            <img src="caminho/para/imagem/personalizada/do/relatorio.png" alt="Visual do relatório" class="report-visual">
-            <div class="report-text-listing">
-              <p class="report-kicker">
-                <span class="type">Malware Analysis</span>
-                <time datetime="2026-07">Jul 2026</time>
-              </p>
-              <p class="report-title">Nome do relatório / família da amostra</p>
-              <p class="report-summary">Resumo de uma linha sobre o achado principal.</p>
-            </div>
+
+            <p class="report-kicker">
+
+              <span class="type">Malware Analysis</span>
+
+              <time datetime="2026-07">Jul 2026</time>
+
+            </p>
+
+            <p class="report-title">Nome do relatório / família da amostra</p>
+
+            <p class="report-summary">Resumo de uma linha sobre o achado principal.</p>
+
           </article>
+
         </a>
+
       </li>
 
+
       Remova o .empty-state abaixo assim que tiver pelo menos um relatório real.
+
     -->
+
     <ul>
+
   <li>
+
     <a href="writeups/eaglespy-vneid-android-spyware.html">
+
       <article>
-        
-        <!-- IMAGEM DO RELATÓRIO: Mostrando a arte personalizada gerada especificamente para este relatório (EagleSpy/VNeID). -->
-        <img src="https://image.noelshack.com/fichiers/2026/30/1/1721671568-image-8.png" alt="EagleSpy/SpyMax Dropper Visual Report" class="report-visual">
-        
-        <div class="report-text-listing">
-          <p class="report-kicker">
-            <span class="type">Cyber Threat Intelligence</span>
-            <time datetime="2026-07">Jul 2026</time>
-          </p>
-          <p class="report-title">Spyware Android disfarçado de VNeID — Família EagleSpy/SpyMax</p>
-          <p class="report-summary">Dropper de dois estágios que imita o app oficial de e-ID do governo do Vietnã para instalar um RAT da linhagem SpyNote/SpyMax, com C2 via socket TCP raw e AES-256/ECB com chave hardcoded.</p>
-        </div>
+
+        <p class="report-kicker">
+
+          <span class="type">Cyber Threat Intelligence</span>
+
+          <time datetime="2026-07">Jul 2026</time>
+
+        </p>
+
+        <p class="report-title">Spyware Android disfarçado de VNeID — Família EagleSpy/SpyMax</p>
+
+        <p class="report-summary">Dropper de dois estágios que imita o app oficial de e-ID do governo do Vietnã para instalar um RAT da linhagem SpyNote/SpyMax, com C2 via socket TCP raw e AES-256/ECB com chave hardcoded.</p>
+
       </article>
+
     </a>
+
   </li>
+
 </ul>
+
 
 </main>
 
+
 <footer id="contact">
+
   <p>© 2026 — Todo conteúdo publicado apenas para fins educacionais e de pesquisa autorizada.</p>
+
   <nav aria-label="Redes">
+
     <ul>
+
       <li><a href="mailto:augustocybersec@gmail.com">e-mail</a></li>
+
       <li><a href="https://x.com/Riveszxx" target="_blank" rel="noopener">X/Twitter</a<></li>
+
       <li><a href="https://github.com/Rivesz" target="_blank" rel="noopener">github</a></li>
+
       <li><a href="https://www.linkedin.com/in/augustobarr0s/" target="_blank" rel="noopener">linkedin</a></li>
+
     </ul>
+
   </nav>
+
 </footer>
 
+
 </body>
-</html>
+
+</html> 
