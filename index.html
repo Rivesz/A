@@ -54,7 +54,7 @@ header{
   display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-s);
   padding:var(--space-s) var(--space-m);
   background:color-mix(in srgb, var(--black) 92%, transparent);
-  backdrop-filter:blur(6px);
+  backdrop-filter:blur(66px);
   border-bottom:2px solid var(--red);
 }
 header h1{ font-family:var(--mono); font-size:1rem; font-weight:400; color:var(--white); }
@@ -66,11 +66,12 @@ nav a:hover, nav a:focus-visible{ color:var(--red-bright); }
 /* ===== HERO ===== */
 #profile{
   position:relative; min-height:min(85vh, 720px);
-  display:grid; align-content:center; gap:var(--space-m);
+  display:grid; grid-template-columns: 1fr; align-content:center; gap:var(--space-m);
   padding:var(--space-l) var(--space-m);
   border-bottom:1px solid var(--line);
   overflow:hidden;
 }
+
 /* burst halftone decorativo, ancorado no canto — assinatura P5 */
 #profile::before{
   content:""; position:absolute; top:-20%; right:-10%; width:70vw; height:70vw; max-width:900px; max-height:900px;
@@ -80,6 +81,17 @@ nav a:hover, nav a:focus-visible{ color:var(--red-bright); }
           mask-image:radial-gradient(circle, black 0%, transparent 70%);
   opacity:.55; pointer-events:none; transform:rotate(-8deg);
 }
+
+/* Estilo para a imagem de identidade visual do portfólio (master graphic) */
+.portfolio-identity-image {
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  border: 1px solid var(--line);
+  box-shadow: 10px 10px 0 var(--panel);
+}
+
 #profile > *{ position:relative; z-index:1; }
 
 .eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; color:var(--red-bright); }
@@ -126,13 +138,25 @@ section{ padding:var(--space-l) var(--space-m); border-bottom:1px solid var(--li
 /* ===== RELATÓRIOS & PAPERS ===== */
 #reports ul{ list-style:none; display:grid; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:var(--space-m); }
 #reports li{ background:var(--black); }
+
+/* Grid para exibir a imagem do relatório e o texto lado a lado */
 #reports article{
-  display:grid; gap:.6rem; padding:var(--space-m); text-decoration:none; color:inherit;
+  display:grid; grid-template-columns: 100px 1fr; gap:var(--space-m); padding:var(--space-m); text-decoration:none; color:inherit;
   transition:background .15s;
 }
 #reports a{ text-decoration:none; color:inherit; display:block; }
 #reports a:hover article, #reports a:focus-visible article{ background:var(--panel); }
 #reports a:hover .report-title, #reports a:focus-visible .report-title{ color:var(--red-bright); }
+
+/* Estilo para a imagem embutida na listagem do relatório */
+.report-visual {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+}
+
+/* Ajuste para o texto do relatório não transbordar */
+.report-text-listing { display: grid; gap:.6rem; min-width: 0; }
 
 .report-kicker{
   font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--white-dim);
@@ -180,6 +204,10 @@ footer a:hover{ color:var(--red-bright); }
 
   <section id="profile" aria-label="Apresentação">
     <p class="eyebrow">Cyber Threat Intelligence · Reverse Engineering · Malware Analysis</p>
+    
+    <!-- IMAGEM DE IDENTIDADE DO PORTFÓLIO: Mostrando a arte mestre gerada para definir a identidade VOID.NET/GOTHIC.HACKING -->
+    <img src="https://image.noelshack.com/fichiers/2026/30/1/1721671568-image-4.png" alt="VOID.NET / GOTHIC.HACKING / PORTFOLIO Master Graphic" class="portfolio-identity-image">
+    
     <h2>RIVES</h2>
     <p class="lede">Publico aqui relatórios de análise de malware e papers técnicos, do comportamento observado em malwares e binários.</p>
 
@@ -228,12 +256,16 @@ footer a:hover{ color:var(--red-bright); }
       <li>
         <a href="writeups/nome-do-arquivo.html">
           <article>
-            <p class="report-kicker">
-              <span class="type">Malware Analysis</span>
-              <time datetime="2026-07">Jul 2026</time>
-            </p>
-            <p class="report-title">Nome do relatório / família da amostra</p>
-            <p class="report-summary">Resumo de uma linha sobre o achado principal.</p>
+            <!-- Adicione uma imagem embutida para cada relatório -->
+            <img src="caminho/para/imagem/personalizada/do/relatorio.png" alt="Visual do relatório" class="report-visual">
+            <div class="report-text-listing">
+              <p class="report-kicker">
+                <span class="type">Malware Analysis</span>
+                <time datetime="2026-07">Jul 2026</time>
+              </p>
+              <p class="report-title">Nome do relatório / família da amostra</p>
+              <p class="report-summary">Resumo de uma linha sobre o achado principal.</p>
+            </div>
           </article>
         </a>
       </li>
@@ -244,12 +276,18 @@ footer a:hover{ color:var(--red-bright); }
   <li>
     <a href="writeups/eaglespy-vneid-android-spyware.html">
       <article>
-        <p class="report-kicker">
-          <span class="type">Cyber Threat Intelligence</span>
-          <time datetime="2026-07">Jul 2026</time>
-        </p>
-        <p class="report-title">Spyware Android disfarçado de VNeID — Família EagleSpy/SpyMax</p>
-        <p class="report-summary">Dropper de dois estágios que imita o app oficial de e-ID do governo do Vietnã para instalar um RAT da linhagem SpyNote/SpyMax, com C2 via socket TCP raw e AES-256/ECB com chave hardcoded.</p>
+        
+        <!-- IMAGEM DO RELATÓRIO: Mostrando a arte personalizada gerada especificamente para este relatório (EagleSpy/VNeID). -->
+        <img src="https://image.noelshack.com/fichiers/2026/30/1/1721671568-image-8.png" alt="EagleSpy/SpyMax Dropper Visual Report" class="report-visual">
+        
+        <div class="report-text-listing">
+          <p class="report-kicker">
+            <span class="type">Cyber Threat Intelligence</span>
+            <time datetime="2026-07">Jul 2026</time>
+          </p>
+          <p class="report-title">Spyware Android disfarçado de VNeID — Família EagleSpy/SpyMax</p>
+          <p class="report-summary">Dropper de dois estágios que imita o app oficial de e-ID do governo do Vietnã para instalar um RAT da linhagem SpyNote/SpyMax, com C2 via socket TCP raw e AES-256/ECB com chave hardcoded.</p>
+        </div>
       </article>
     </a>
   </li>
