@@ -340,7 +340,7 @@ ClientPort (Base64): Nzc3Mw==            →  Decoded: 7773</code></pre>
 
       <figure>
         <img src="assets/eaglespy-vneid-android-spyware/CYberchef.png" alt="CyberChef decodificando strings Base64 do C2">
-        <figcaption><strong>Fig. 6 —</strong> deobfuscação das strings de configuração de C2 via recipe Base64 no CyberChef.</figcaption>
+        <figcaption><strong>Fig. 5 —</strong> deobfuscação das strings de configuração de C2 via recipe Base64 no CyberChef.</figcaption>
       </figure>
 
       <h3>4.4 Criptografia de Payload de Dados</h3>
@@ -364,7 +364,7 @@ public static String encrypt(String str) throws Exception {
 
       <figure>
         <img src="assets/eaglespy-vneid-android-spyware/cryptsecretkey.png" alt="Classe EncryptionCUtils com a SECRET_KEY hardcoded">
-        <figcaption><strong>Fig. 7 —</strong> localização da chave AES estática dentro do código decompilado.</figcaption>
+        <figcaption><strong>Fig. 6 —</strong> localização da chave AES estática dentro do código decompilado.</figcaption>
       </figure>
     </section>
 
@@ -404,10 +404,10 @@ public static String encrypt(String str) throws Exception {
           <tr><td>Collection</td><td>Video Capture</td><td>T1512</td><td>Permissão CAMERA</td></tr>
           <tr><td>Collection</td><td>Location Tracking</td><td>T1430</td><td>Permissões ACCESS_FINE/COARSE_LOCATION</td></tr>
           <tr><td>Command and Control</td><td>Non-Standard Port</td><td>T1509</td><td>Canal C2 via socket TCP raw na porta 7773</td></tr>
-          <tr><td>Defense Evasion</td><td>Obfuscated Files or Information</td><td>T1406*</td><td>Identificadores aleatórios; C2 e chave codificados em Base64</td></tr>
+          <tr><td>Defense Evasion</td><td>Obfuscated Files or Information</td><td>T1406</td><td>Identificadores aleatórios; C2 e chave codificados em Base64</td></tr>
         </tbody>
       </table>
-      <p class="muted">*Nomenclaturas de "ofuscação" na matriz Mobile têm histórico de reorganização entre versões; valide o ID exato na versão vigente da matriz antes de finalizar o post.</p>
+      <p class="muted"></p>
     </section>
 
 
