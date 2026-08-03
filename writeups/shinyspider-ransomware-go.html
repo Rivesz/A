@@ -295,22 +295,18 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <img src="assets/shinyspider-ransomware-go/fig8.png" alt="Decompiler de main.generateMutexName mostrando o prefixo Global\">
         <figcaption><strong>Fig. 8 —</strong> evidência da derivação do nome do mutex.</figcaption>
       </figure>
-      <figure>
-        <span class="placeholder">[ PRINT: checkSingleInstance comparando contra ERROR_ALREADY_EXISTS ]</span>
-        <figcaption><strong>Fig. 9 —</strong> verificação de instância única.</figcaption>
-      </figure>
-
+      
       <h3>4.5 Módulos de evasão de defesa</h3>
       <p>Três módulos distintos, todos sob o mesmo prefixo de namespace interno, foram identificados como dedicados à evasão de EDR/telemetria: <strong>(a)</strong> resolução de API do Windows por hash, evitando referência direta a nomes de função na Import Table do PE; <strong>(b)</strong> um hook completo sobre a função de emissão de eventos ETW (Event Tracing for Windows) de <code>ntdll.dll</code>, amplamente consumida por EDRs para monitoramento comportamental; <strong>(c)</strong> uma rotina de contra-instrumentação que verifica periodicamente, a cada 500ms, se as próprias APIs em uso pelo malware foram "hookadas" por ferramentas de instrumentação/EDR.</p>
       <p>A modularização consistente sob um namespace comum sugere um framework de evasão interno e reutilizável do(s) desenvolvedor(es), não código improvisado ad-hoc para esta campanha específica.</p>
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig10.png" alt="Symbol Tree mostrando o módulo HCWin/etwevasion e HookedEtwEventWrite">
-        <figcaption><strong>Fig. 10 —</strong> evidência do módulo de evasão de telemetria.</figcaption>
+        <figcaption><strong>Fig. 9 —</strong> evidência do módulo de evasão de telemetria.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig11.png" alt="HCWin/hookshield.(*HookDetector).monitoringLoop usando time.NewTicker">
-        <figcaption><strong>Fig. 11 —</strong> evidência da rotina de contra-instrumentação (loop de monitoramento de hooks).</figcaption>
+        <figcaption><strong>Fig. 10 —</strong> evidência da rotina de contra-instrumentação (loop de monitoramento de hooks).</figcaption>
       </figure>
 
       <h3>4.6 Preparação anti-recovery</h3>
@@ -332,15 +328,15 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig12.png" alt="Assinatura de HCWin/shadow.DeleteShadowCopies usando go-ole">
-        <figcaption><strong>Fig. 12 —</strong> evidência do mecanismo de anti-recovery.</figcaption>
+        <figcaption><strong>Fig. 11 —</strong> evidência do mecanismo de anti-recovery.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig13.png" alt="Decompiler de main.killBlacklistedServices mostrando contador 0x1F (31)">
-        <figcaption><strong>Fig. 13 —</strong> confirmação do tamanho da kill list (0x1F = 31).</figcaption>
+        <figcaption><strong>Fig. 12 —</strong> confirmação do tamanho da kill list (0x1F = 31).</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig14.png" alt="Strings $windows.~bt, $windows.~ws, bootfont.bin no listing">
-        <figcaption><strong>Fig. 14 —</strong> evidência das exclusões de bootabilidade.</figcaption>
+        <figcaption><strong>Fig. 13 —</strong> evidência das exclusões de bootabilidade.</figcaption>
       </figure>
 
       <h3>4.7 Rotina de criptografia</h3>
@@ -360,23 +356,23 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig15.png" alt="Chamadas crypto/rand.Read gerando valores aleatórios de 32 e 12 bytes">
-        <figcaption><strong>Fig. 15 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.7.</figcaption>
+        <figcaption><strong>Fig. 14 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.7.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Chamada de crypto/rsa.EncryptOAEP com hash SHA-256">
-        <figcaption><strong>Fig. 16 —</strong> evidência da proteção da chave simétrica.</figcaption>
+        <figcaption><strong>Fig. 15 —</strong> evidência da proteção da chave simétrica.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Carregamento da chave pública RSA embutida">
-        <figcaption><strong>Fig. 17 —</strong> evidência do módulo RSA de 2048 bits.</figcaption>
+        <figcaption><strong>Fig. 16 —</strong> evidência do módulo RSA de 2048 bits.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig18.png" alt="Constantes 0x52445053 (SPDR) e 0x53444e45 (ENDS) em main.encryptFile">
-        <figcaption><strong>Fig. 18 —</strong> evidência do header customizado do arquivo criptografado. O mesmo crop também mostra a lógica de decisão do modo parcial/completo (P/C).</figcaption>
+        <figcaption><strong>Fig. 17 —</strong> evidência do header customizado do arquivo criptografado. O mesmo crop também mostra a lógica de decisão do modo parcial/completo (P/C).</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig19.png" alt="Decompiler de main.isValidExtension: param_2 == 9 e checagem de '.'">
-        <figcaption><strong>Fig. 19 —</strong> evidência do marcador de arquivo já processado.</figcaption>
+        <figcaption><strong>Fig. 18 —</strong> evidência do marcador de arquivo já processado.</figcaption>
       </figure>
 
       <h3>4.8 Propagação lateral</h3>
@@ -384,11 +380,11 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig20.png" alt="String identificando WMI como protocolo de execução remota">
-        <figcaption><strong>Fig. 20 —</strong> evidência da tentativa primária via WMI.</figcaption>
+        <figcaption><strong>Fig. 19 —</strong> evidência da tentativa primária via WMI.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig21.png" alt="HCWin/shares.isSMBPortOpen usando net.DialTimeout na porta 445">
-        <figcaption><strong>Fig. 21 —</strong> evidência do fallback via SMB.</figcaption>
+        <figcaption><strong>Fig. 20 —</strong> evidência do fallback via SMB.</figcaption>
       </figure>
 
       <h3>4.9 Nota de resgate e defacement</h3>
@@ -397,11 +393,11 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig22.png" alt="XREFs da string R3ADME_lVks5fYe.txt referenciada em múltiplas funções">
-        <figcaption><strong>Fig. 22 —</strong> confirmação do reuso consistente do nome da nota.</figcaption>
+        <figcaption><strong>Fig. 21 —</strong> confirmação do reuso consistente do nome da nota.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig23.png" alt="String SystemParametersInfoW referenciada por main.changeWallpaper">
-        <figcaption><strong>Fig. 23 —</strong> evidência do mecanismo de defacement.</figcaption>
+        <figcaption><strong>Fig. 22 —</strong> evidência do mecanismo de defacement.</figcaption>
       </figure>
 
       <h3>4.10 Autodestruição</h3>
@@ -409,7 +405,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig24.png" alt="String wscript.exe //B //Nologo em main.deleteSelfViaWMI">
-        <figcaption><strong>Fig. 24 —</strong> evidência do mecanismo de autodestruição.</figcaption>
+        <figcaption><strong>Fig. 23 —</strong> evidência do mecanismo de autodestruição.</figcaption>
       </figure>
     </section>
 
