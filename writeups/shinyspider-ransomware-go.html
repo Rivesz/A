@@ -134,7 +134,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
     </header>
 
     <figure class="cover">
-      <img src="assets/shinyspider-ransomware-go/capa.png">
+      <img src="assets/shinyspider-ransomware-go/capa.png" alt="Capa do Relatório">
     </figure>
 
     <div class="redaction-note">
@@ -153,7 +153,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
           <tr><td>Linguagem / Toolchain</td><td>Go, compilado com <code>go1.24.5</code></td></tr>
           <tr><td>SHA256</td><td><code>e41dd341f317cb674ff12c83a17365e5c5aa3240d912ab3801ff4cf09a00ccb2</code></td></tr>
           <tr><td>Instância única</td><td>Mutex prefixado <code>Global\</code>, nome derivado de seed por máquina</td></tr>
-	  <tr><td>Cifra do conteúdo</td><td>Chave aleatória de 256 bits por arquivo — algoritmo <strong>ChaCha20-Poly1305</strong> confirmado estaticamente</td></tr>
+          <tr><td>Cifra do conteúdo</td><td>Chave aleatória de 256 bits por arquivo — algoritmo <strong>ChaCha20-Poly1305</strong> confirmado estaticamente</td></tr>
           <tr><td>Proteção da chave</td><td>RSA-2048 com padding OAEP (SHA-256)</td></tr>
           <tr><td>Header de arquivo criptografado</td><td>Magic markers <code>SPDR</code> (início) / <code>ENDS</code> (fim)</td></tr>
           <tr><td>Modo de criptografia parcial</td><td>Flag <code>P</code> (parcial) para arquivos grandes; <code>C</code> (completo) padrão</td></tr>
@@ -215,7 +215,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
           <tr><td>Encerramento de processos que mantêm arquivos abertos/travados</td><td> Confirmado — kill list de 31 processos/serviços (§4.6)</td></tr>
           <tr><td>Propagação para outros dispositivos, criação de serviço e script de inicialização embutidos no encryptor</td><td>Confirmado — propagação WMI/SMB (§4.8)</td></tr>
           <tr><td>RSA-2048 para troca/proteção de chave</td><td>Confirmado — RSA-2048/OAEP (§4.7)</td></tr>
-	  <tr><td>Uso da cifra simétrica ChaCha20</td><td><strong>Confirmado</strong> — evidência do pacote crypto/chacha20-poly1305 extraída via strings/PCLNTAB (Seção 4.7)</td></tr>
+          <tr><td>Uso da cifra simétrica ChaCha20</td><td><strong>Confirmado</strong> — evidência do pacote crypto/chacha20-poly1305 extraída via strings/PCLNTAB (Seção 4.7)</td></tr>
         </tbody>
       </table>
 
@@ -246,7 +246,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p class="muted">Não foi realizada análise dinâmica (execução em sandbox) nesta fase — os achados refletem exclusivamente comportamento inferido por leitura de código descompilado.</p>
 
       <figure>
-        <span class="placeholder">[ PRINT: título da janela do CodeBrowser no Ghidra mostrando o hash SHA256 do arquivo carregado ]</span>
+        <img src="assets/shinyspider-ransomware-go/fig2.png" alt="Título da janela do CodeBrowser no Ghidra mostrando o hash SHA256">
         <figcaption><strong>Fig. 2 —</strong> evidência de amostra e ponto de partida da análise.</figcaption>
       </figure>
     </section>
@@ -271,7 +271,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p>O binário verifica se está sendo executado com privilégios elevados através de uma checagem de token de processo consultando a classe de informação <strong>TokenElevation</strong> — a forma canônica documentada pela Microsoft para checagem de elevação UAC. A resolução das APIs do Windows envolvidas nessa checagem é feita <strong>por hash</strong>, em vez de import direto por nome, constituindo uma técnica de evasão estática que dificulta detecção por assinatura de import table.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig05-isrunningasadmin.png" alt="Decompiler de main.isRunningAsAdmin mostrando checagem de token de elevação">
+        <img src="assets/shinyspider-ransomware-go/fig5.png" alt="Decompiler de main.isRunningAsAdmin mostrando checagem de token de elevação">
         <figcaption><strong>Fig. 5 —</strong> evidência da verificação de privilégio via resolução de API por hash.</figcaption>
       </figure>
 
@@ -279,11 +279,11 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p>Uma função dedicada carrega dinamicamente uma biblioteca do sistema e consulta o nome do computador como base de um seed determinístico. Em caso de falha dessa chamada, o binário recorre ao nome de usuário como fallback — uma escolha assimétrica em relação ao que seria esperado (nome do computador via variável de ambiente equivalente), reforçando a importância de validar código real em vez de assumir comportamento previsível. O valor obtido é processado por uma rotina de transformação determinística e reutilizado em múltiplos pontos do binário como semente vinculada à máquina.</p>
 
       <figure>
-        <span class="placeholder">[ PRINT: decompiler de main.getSystemSeed mostrando o carregamento da API de nome de computador ]</span>
+        <img src="assets/shinyspider-ransomware-go/fig6.png" alt="Decompiler de main.getSystemSeed mostrando o carregamento da API e algoritmos">
         <figcaption><strong>Fig. 6 —</strong> evidência da geração de seed por máquina.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig07-username-fallback.png" alt="Branch de fallback para variável de ambiente USERNAME">
+        <img src="assets/shinyspider-ransomware-go/fig6.png" alt="Branch de fallback para variável de ambiente USERNAME">
         <figcaption><strong>Fig. 7 —</strong> confirmação do fallback assimétrico.</figcaption>
       </figure>
 
@@ -292,7 +292,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p class="muted"><strong>Ressalva metodológica:</strong> como o nome do mutex é derivado do seed por máquina, não constitui um IOC estático confiável entre vítimas diferentes.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig08-generatemutexname-global.png" alt="Decompiler de main.generateMutexName mostrando o prefixo Global\">
+        <img src="assets/shinyspider-ransomware-go/fig8.png" alt="Decompiler de main.generateMutexName mostrando o prefixo Global\">
         <figcaption><strong>Fig. 8 —</strong> evidência da derivação do nome do mutex.</figcaption>
       </figure>
       <figure>
@@ -305,11 +305,11 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p>A modularização consistente sob um namespace comum sugere um framework de evasão interno e reutilizável do(s) desenvolvedor(es), não código improvisado ad-hoc para esta campanha específica.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig10-etwevasion-symboltree.png" alt="Symbol Tree mostrando o módulo HCWin/etwevasion e HookedEtwEventWrite">
+        <img src="assets/shinyspider-ransomware-go/fig10.png" alt="Symbol Tree mostrando o módulo HCWin/etwevasion e HookedEtwEventWrite">
         <figcaption><strong>Fig. 10 —</strong> evidência do módulo de evasão de telemetria.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig11-hookdetector-monitoringloop.png" alt="HCWin/hookshield.(*HookDetector).monitoringLoop usando time.NewTicker">
+        <img src="assets/shinyspider-ransomware-go/fig11.png" alt="HCWin/hookshield.(*HookDetector).monitoringLoop usando time.NewTicker">
         <figcaption><strong>Fig. 11 —</strong> evidência da rotina de contra-instrumentação (loop de monitoramento de hooks).</figcaption>
       </figure>
 
@@ -331,15 +331,15 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p>O binário exclui explicitamente da rotina de criptografia um conjunto de diretórios/arquivos críticos ao boot e integridade do sistema (lixeira, pastas de atualização do Windows, arquivos de boot). Um sistema completamente inutilizável inviabilizaria tanto a leitura da nota de resgate quanto o pagamento — comportamento deliberado e contraproducente evitar.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig12-deleteshadowcopies-signature.png" alt="Assinatura de HCWin/shadow.DeleteShadowCopies usando go-ole">
+        <img src="assets/shinyspider-ransomware-go/fig12.png" alt="Assinatura de HCWin/shadow.DeleteShadowCopies usando go-ole">
         <figcaption><strong>Fig. 12 —</strong> evidência do mecanismo de anti-recovery.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig13-killlist-count-31.png" alt="Decompiler de main.killBlacklistedServices mostrando contador 0x1F (31)">
+        <img src="assets/shinyspider-ransomware-go/fig13.png" alt="Decompiler de main.killBlacklistedServices mostrando contador 0x1F (31)">
         <figcaption><strong>Fig. 13 —</strong> confirmação do tamanho da kill list (0x1F = 31).</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig14-boot-exclusion-strings.png" alt="Strings $windows.~bt, $windows.~ws, bootfont.bin no listing">
+        <img src="assets/shinyspider-ransomware-go/fig14.png" alt="Strings $windows.~bt, $windows.~ws, bootfont.bin no listing">
         <figcaption><strong>Fig. 14 —</strong> evidência das exclusões de bootabilidade.</figcaption>
       </figure>
 
@@ -359,23 +359,23 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p><strong>Validação de arquivo já processado:</strong> a extensão do arquivo (incluindo o ponto) precisa ter exatamente 9 caracteres — usado como marcador para evitar reprocessamento de arquivos já criptografados.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig15-key-generation-32bytes.png" alt="Chamadas crypto/rand.Read gerando valores aleatórios de 32 e 12 bytes">
+        <img src="assets/shinyspider-ransomware-go/fig15.png" alt="Chamadas crypto/rand.Read gerando valores aleatórios de 32 e 12 bytes">
         <figcaption><strong>Fig. 15 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.7.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig16-rsa-encryptoaep.png" alt="Chamada de crypto/rsa.EncryptOAEP com hash SHA-256">
+        <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Chamada de crypto/rsa.EncryptOAEP com hash SHA-256">
         <figcaption><strong>Fig. 16 —</strong> evidência da proteção da chave simétrica.</figcaption>
       </figure>
       <figure>
-        <span class="placeholder">[ PRINT: carregamento da chave pública RSA embutida ]</span>
+        <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Carregamento da chave pública RSA embutida">
         <figcaption><strong>Fig. 17 —</strong> evidência do módulo RSA de 2048 bits.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig18-magic-markers-spdr-ends.png" alt="Constantes 0x52445053 (SPDR) e 0x53444e45 (ENDS) em main.encryptFile">
+        <img src="assets/shinyspider-ransomware-go/fig18.png" alt="Constantes 0x52445053 (SPDR) e 0x53444e45 (ENDS) em main.encryptFile">
         <figcaption><strong>Fig. 18 —</strong> evidência do header customizado do arquivo criptografado. O mesmo crop também mostra a lógica de decisão do modo parcial/completo (P/C).</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig19-extension-length-check.png" alt="Decompiler de main.isValidExtension: param_2 == 9 e checagem de '.'">
+        <img src="assets/shinyspider-ransomware-go/fig19.png" alt="Decompiler de main.isValidExtension: param_2 == 9 e checagem de '.'">
         <figcaption><strong>Fig. 19 —</strong> evidência do marcador de arquivo já processado.</figcaption>
       </figure>
 
@@ -383,24 +383,24 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p>O binário implementa uma cadeia de tentativas para execução remota em outros hosts da rede: <strong>WMI</strong> como primeira tentativa — técnica <em>living-off-the-land</em> que evita dependência de compartilhamentos SMB e gera menor volume de artefatos de rede identificáveis — com <strong>fallback para SMB</strong>, via varredura de conectividade na porta 445 com timeout curto. Confirmação de porta aberta habilita tentativa subsequente de acesso a compartilhamentos administrativos para execução remota.</p>
 
       <figure>
-        <span class="placeholder">[ PRINT: string identificando WMI como protocolo de execução remota ]</span>
+        <img src="assets/shinyspider-ransomware-go/fig20.png" alt="String identificando WMI como protocolo de execução remota">
         <figcaption><strong>Fig. 20 —</strong> evidência da tentativa primária via WMI.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig21-smb-port-scan.png" alt="HCWin/shares.isSMBPortOpen usando net.DialTimeout na porta 445">
+        <img src="assets/shinyspider-ransomware-go/fig21.png" alt="HCWin/shares.isSMBPortOpen usando net.DialTimeout na porta 445">
         <figcaption><strong>Fig. 21 —</strong> evidência do fallback via SMB.</figcaption>
       </figure>
 
       <h3>4.9 Nota de resgate e defacement</h3>
-      <p>O arquivo de nota (<code>R3ADME_lVks5fYe.txt</code>) usa leetspeak combinado a um sufixo alfanumérico, referenciado consistentemente em múltiplas funções do binário. Recomenda-se validação adicional sobre se esse sufixo é fixo nesta amostra ou gerado dinamicamente por execução, o que determina sua utilidade como IOC estático.</p>
+      <p>A análise estática confirmou que o sufixo da nota de resgate (<code>R3ADME_lVks5fYe.txt</code>) é fixo nesta amostra, tornando o nome completo um IOC estático confiável, sendo referenciado consistentemente em múltiplas funções do binário.</p>
       <p>O binário também invoca a API nativa do Windows para troca de wallpaper (constante <code>SPI_SETDESKWALLPAPER</code>), reforçando visualmente a notificação de comprometimento independentemente de a vítima abrir a nota.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig22-ransom-note-xrefs.png" alt="XREFs da string R3ADME_lVks5fYe.txt referenciada em múltiplas funções">
+        <img src="assets/shinyspider-ransomware-go/fig22.png" alt="XREFs da string R3ADME_lVks5fYe.txt referenciada em múltiplas funções">
         <figcaption><strong>Fig. 22 —</strong> confirmação do reuso consistente do nome da nota.</figcaption>
       </figure>
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig23-wallpaper-api.png" alt="String SystemParametersInfoW referenciada por main.changeWallpaper">
+        <img src="assets/shinyspider-ransomware-go/fig23.png" alt="String SystemParametersInfoW referenciada por main.changeWallpaper">
         <figcaption><strong>Fig. 23 —</strong> evidência do mecanismo de defacement.</figcaption>
       </figure>
 
@@ -408,7 +408,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <p>O binário dropa um script VBScript em uma pasta temporária e o executa via <code>wscript.exe //B //Nologo</code> — flags que suprimem diálogos de erro e o banner do Windows Script Host. Esse é o padrão clássico de autodestruição em Windows: como um processo não pode deletar o próprio executável em execução, o script roda desacoplado, aguardando a liberação do handle para remover o binário original — dificultando extração da amostra por resposta a incidente pós-infecção.</p>
 
       <figure>
-        <img src="assets/shinyspider-ransomware-go/fig24-selfdelete-wscript.png" alt="String wscript.exe //B //Nologo em main.deleteSelfViaWMI">
+        <img src="assets/shinyspider-ransomware-go/fig24.png" alt="String wscript.exe //B //Nologo em main.deleteSelfViaWMI">
         <figcaption><strong>Fig. 24 —</strong> evidência do mecanismo de autodestruição.</figcaption>
       </figure>
     </section>
@@ -421,7 +421,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <tbody>
           <tr><td>SHA256</td><td><code>e41dd341f317cb674ff12c83a17365e5c5aa3240d912ab3801ff4cf09a00ccb2</code></td><td>Hash do binário original submetido à análise. Corroborado por análise pública independente (ver §2.1)</td></tr>
           <tr><td>Toolchain</td><td><code>go1.24.5</code></td><td>Versão do compilador Go embutida em metadados de build</td></tr>
-          <tr><td>Nome de nota de resgate</td><td><code>R3ADME_lVks5fYe.txt</code></td><td>Validar se sufixo é fixo ou dinâmico antes de usar como IOC estático</td></tr>
+          <tr><td>Nome de nota de resgate</td><td><code>R3ADME_lVks5fYe.txt</code></td><td>Confirmado como nome estático e fixo na amostra analisada</td></tr>
           <tr><td>Header magic (início)</td><td><code>SPDR</code></td><td>Marcador de início do header de arquivo criptografado</td></tr>
           <tr><td>Header magic (fim)</td><td><code>ENDS</code></td><td>Marcador de fim do header de arquivo criptografado</td></tr>
           <tr><td>Comprimento de extensão</td><td>9 caracteres (com ponto)</td><td>Usado como marcador de arquivo já processado</td></tr>
