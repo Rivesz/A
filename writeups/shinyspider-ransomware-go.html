@@ -210,18 +210,18 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <table class="ioc-table">
         <thead><tr><th>TTP documentado publicamente</th><th>Achado nesta análise</th></tr></thead>
         <tbody>
-          <tr><td>Hook de <code>EtwEventWrite</code> para impedir logging no Event Viewer</td><td>Confirmado (§4.5)</td></tr>
-          <tr><td>Deleção de Volume Shadow Copies</td><td>Confirmado, via COM (§4.6)</td></tr>
-          <tr><td>Encerramento de processos que mantêm arquivos abertos/travados</td><td>Parcialmente confirmado — observada kill list estática de 31 processos/serviços (§4.6), não enumeração dinâmica de handles</td></tr>
-          <tr><td>Propagação para outros dispositivos, criação de serviço e script de inicialização embutidos no encryptor</td><td>Confirmado — propagação WMI/SMB (§4.8)</td></tr>
-          <tr><td>RSA-2048 para troca/proteção de chave</td><td>Confirmado — RSA-2048/OAEP (§4.7)</td></tr>
-          <tr><td>Uso da cifra simétrica ChaCha20</td><td><strong>Confirmado</strong> — evidência do pacote crypto/chacha20-poly1305 extraída via strings/PCLNTAB (Seção 4.7)</td></tr>
+          <tr><td>Hook de <code>EtwEventWrite</code> para impedir logging no Event Viewer</td><td>Confirmado (§4.4)</td></tr>
+          <tr><td>Deleção de Volume Shadow Copies</td><td>Confirmado, via COM (§4.5)</td></tr>
+          <tr><td>Encerramento de processos que mantêm arquivos abertos/travados</td><td>Parcialmente confirmado — observada kill list estática de 31 processos/serviços (§4.5), não enumeração dinâmica de handles</td></tr>
+          <tr><td>Propagação para outros dispositivos, criação de serviço e script de inicialização embutidos no encryptor</td><td>Confirmado — propagação WMI/SMB (§4.7)</td></tr>
+          <tr><td>RSA-2048 para troca/proteção de chave</td><td>Confirmado — RSA-2048/OAEP (§4.6)</td></tr>
+          <tr><td>Uso da cifra simétrica ChaCha20</td><td><strong>Confirmado</strong> — evidência do pacote crypto/chacha20-poly1305 extraída via strings/PCLNTAB (Seção 4.6)</td></tr>
         </tbody>
       </table>
 
       <p><strong>Nível de confiança — correlação de TTPs: Moderado-Alto.</strong> A sobreposição de técnicas específicas e não-triviais (hook de ETW, deleção de Shadow Copies via COM/WMI) com relatos públicos sobre o ShinySp1d3r é consistente e bem documentada nesta análise — no nível de <em>técnica</em>, o comportamento observado é uma representação fiel e tecnicamente correta do que se descreve publicamente para essa família.</p>
 
-      <p><strong>Nível de confiança — autenticidade operacional do binário: Baixo.</strong> Como detalhado na ressalva da Seção 1, a ausência total de stripping de símbolos e de ofuscação de strings é incomum para um artefato de produção de um grupo com o histórico técnico da SLSH, e mais consistente com uma amostra construída para fins educacionais/de treinamento (reforçado pelo fato de esta amostra específica ter circulado publicamente como desafio técnico. <strong>Este relatório, portanto, não trata a amostra como um artefato coletado de uma intrusão real</strong> — trata-a como uma reconstrução tecnicamente fiel das TTPs do ShinySp1d3r, útil para fins de detecção e treinamento, mas não como evidência de uma campanha ativa específica. <strong>Esta análise não realizou diffing binário direto</strong>.</p>
+      <p><strong>Nível de confiança — autenticidade operacional do binário: Baixo.</strong> Como detalhado na ressalva da Seção 1, a ausência total de stripping de símbolos e de ofuscação de strings é incomum para um artefato de produção de um grupo com o histórico técnico da SLSH, e mais consistente com uma amostra construída para fins educacionais/de treinamento (reforçado pelo fato de esta amostra específica ter circulado publicamente como desafio técnico). <strong>Este relatório, portanto, não trata a amostra como um artefato coletado de uma intrusão real</strong> — trata-a como uma reconstrução tecnicamente fiel das TTPs do ShinySp1d3r, útil para fins de detecção e treinamento, mas não como evidência de uma campanha ativa específica. <strong>Esta análise não realizou diffing binário direto</strong>.</p>
 
       <p>A MOXFIVE, em relatório de 4 de dezembro de 2025, classificava o ShinySp1d3r como uma ferramenta <strong>ainda em desenvolvimento</strong>, sem instância publicamente confirmada de implantação em ambiente de vítima até aquela data — a maior parte da informação disponível na época vinha de anúncios no Telegram e postagens no leak site do grupo, não de evidência técnica direta.</p>
 
@@ -255,19 +255,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
     <section id="analise-tecnica">
       <h2>4. Análise Técnica</h2>
 
-      <h3>4.1 Identificação do binário e ponto de entrada</h3>
-      <p>O binário foi identificado como compilado com <code>go1.24.5</code>, confirmado via string de metadados de build embutida, verificável de forma independente por <code>go version -m</code>. A função de entrada do desenvolvedor, <code>main.main</code>, foi localizada em <code>VA 0xDAE980</code>, com Image Base do PE em <code>0xC10000</code>. O binário mantém a tabela de símbolos intacta, permitindo navegação direta por nome de função ao longo de toda a análise.</p>
-
-      <figure>
-        <span class="placeholder">[ PRINT: Symbol Tree no Ghidra mostrando main.main ]</span>
-        <figcaption><strong>Fig. 3 —</strong> confirmação da localização da função de entrada.</figcaption>
-      </figure>
-      <figure>
-        <span class="placeholder">[ PRINT: IMAGE_OPTIONAL_HEADER no DIE mostrando ImageBase e o VA de main.main ]</span>
-        <figcaption><strong>Fig. 4 —</strong> evidência do cálculo de RVA.</figcaption>
-      </figure>
-
-      <h3>4.2 Verificação de privilégio</h3>
+      <h3>4.1 Verificação de privilégio</h3>
       <p>O binário verifica se está sendo executado com privilégios elevados através de uma checagem de token de processo consultando a classe de informação <strong>TokenElevation</strong> — a forma canônica documentada pela Microsoft para checagem de elevação UAC. A resolução das APIs do Windows envolvidas nessa checagem é feita <strong>por hash</strong>, em vez de import direto por nome, constituindo uma técnica de evasão estática que dificulta detecção por assinatura de import table.</p>
 
       <figure>
@@ -275,7 +263,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 5 —</strong> evidência da verificação de privilégio via resolução de API por hash.</figcaption>
       </figure>
 
-      <h3>4.3 Geração de seed do sistema</h3>
+      <h3>4.2 Geração de seed do sistema</h3>
       <p>Uma função dedicada carrega dinamicamente uma biblioteca do sistema e consulta o nome do computador como base de um seed determinístico. Em caso de falha dessa chamada, o binário recorre ao nome de usuário como fallback — uma escolha assimétrica em relação ao que seria esperado (nome do computador via variável de ambiente equivalente), reforçando a importância de validar código real em vez de assumir comportamento previsível. O valor obtido é processado por uma rotina de transformação determinística e reutilizado em múltiplos pontos do binário como semente vinculada à máquina.</p>
 
       <figure>
@@ -287,7 +275,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 7 —</strong> confirmação do fallback assimétrico.</figcaption>
       </figure>
 
-      <h3>4.4 Mutex de instância única</h3>
+      <h3>4.3 Mutex de instância única</h3>
       <p>O nome do mutex é derivado diretamente do seed de sistema, prefixado por <code>Global\</code> — namespace de objeto do Windows que garante visibilidade entre todas as sessões do sistema (RDP, múltiplos usuários, sessões de serviço), não apenas na sessão do processo criador. A checagem de existência prévia do mutex segue o padrão idiomático correto para essa verificação no Windows.</p>
       <p class="muted"><strong>Ressalva metodológica:</strong> como o nome do mutex é derivado do seed por máquina, não constitui um IOC estático confiável entre vítimas diferentes.</p>
 
@@ -295,12 +283,8 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <img src="assets/shinyspider-ransomware-go/fig8.png" alt="Decompiler de main.generateMutexName mostrando o prefixo Global\">
         <figcaption><strong>Fig. 8 —</strong> evidência da derivação do nome do mutex.</figcaption>
       </figure>
-      <figure>
-        <span class="placeholder">[ PRINT: checkSingleInstance comparando contra ERROR_ALREADY_EXISTS ]</span>
-        <figcaption><strong>Fig. 9 —</strong> verificação de instância única.</figcaption>
-      </figure>
 
-      <h3>4.5 Módulos de evasão de defesa</h3>
+      <h3>4.4 Módulos de evasão de defesa</h3>
       <p>Três módulos distintos, todos sob o mesmo prefixo de namespace interno, foram identificados como dedicados à evasão de EDR/telemetria: <strong>(a)</strong> resolução de API do Windows por hash, evitando referência direta a nomes de função na Import Table do PE; <strong>(b)</strong> um hook completo sobre a função de emissão de eventos ETW (Event Tracing for Windows) de <code>ntdll.dll</code>, amplamente consumida por EDRs para monitoramento comportamental; <strong>(c)</strong> uma rotina de contra-instrumentação que verifica periodicamente, a cada 500ms, se as próprias APIs em uso pelo malware foram "hookadas" por ferramentas de instrumentação/EDR.</p>
       <p>A modularização consistente sob um namespace comum sugere um framework de evasão interno e reutilizável do(s) desenvolvedor(es), não código improvisado ad-hoc para esta campanha específica.</p>
 
@@ -313,7 +297,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 11 —</strong> evidência da rotina de contra-instrumentação (loop de monitoramento de hooks).</figcaption>
       </figure>
 
-      <h3>4.6 Preparação anti-recovery</h3>
+      <h3>4.5 Preparação anti-recovery</h3>
       <p>A deleção de Volume Shadow Copies é feita via interação direta com COM/WMI, usando uma biblioteca Go de terceiros para essa interação, em vez de invocar <code>vssadmin.exe</code> ou <code>wmic.exe</code> como processo filho. Essa escolha evita a geração de artefatos de linha de comando comumente monitorados por EDRs, executando a remoção programaticamente dentro do próprio processo.</p>
 
       <p><strong>Kill list de processos/serviços:</strong> identificados 31 processos/serviços-alvo, organizados por categoria funcional:</p>
@@ -343,7 +327,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 14 —</strong> evidência das exclusões de bootabilidade.</figcaption>
       </figure>
 
-      <h3>4.7 Rotina de criptografia</h3>
+      <h3>4.6 Rotina de criptografia</h3>
       <p>Cada arquivo recebe uma chave simétrica aleatória de <strong>32 bytes (256 bits)</strong>, gerada por uma API Go que utiliza a fonte de entropia criptograficamente segura do sistema operacional.</p>
 
       <p><strong>Confirmado via Análise Estática:</strong> A análise de strings e da PCLNTAB do binário confirmou o uso do algoritmo <strong>ChaCha20-Poly1305</strong> para a cifragem dos arquivos. A evidência foi extraída diretamente das dependências estáticas do Golang embutidas no executável, especificamente através da identificação das importações dos pacotes <code>golang.org/x/crypto/chacha20</code> e <code>vendor/golang.org/x/crypto/chacha20poly1305</code>, dispensando a necessidade de validação por fontes de terceiros.</p>
@@ -360,7 +344,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig15.png" alt="Chamadas crypto/rand.Read gerando valores aleatórios de 32 e 12 bytes">
-        <figcaption><strong>Fig. 15 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.7.</figcaption>
+        <figcaption><strong>Fig. 15 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.6.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Chamada de crypto/rsa.EncryptOAEP com hash SHA-256">
@@ -379,7 +363,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 19 —</strong> evidência do marcador de arquivo já processado.</figcaption>
       </figure>
 
-      <h3>4.8 Propagação lateral</h3>
+      <h3>4.7 Propagação lateral</h3>
       <p>O binário implementa uma cadeia de tentativas para execução remota em outros hosts da rede: <strong>WMI</strong> como primeira tentativa — técnica <em>living-off-the-land</em> que evita dependência de compartilhamentos SMB e gera menor volume de artefatos de rede identificáveis — com <strong>fallback para SMB</strong>, via varredura de conectividade na porta 445 com timeout curto. Confirmação de porta aberta habilita tentativa subsequente de acesso a compartilhamentos administrativos para execução remota.</p>
 
       <figure>
@@ -391,7 +375,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 21 —</strong> evidência do fallback via SMB.</figcaption>
       </figure>
 
-      <h3>4.9 Nota de resgate e defacement</h3>
+      <h3>4.8 Nota de resgate e defacement</h3>
       <p>A análise estática confirmou que o sufixo da nota de resgate (<code>R3ADME_lVks5fYe.txt</code>) é fixo nesta amostra, tornando o nome completo um IOC estático confiável, sendo referenciado consistentemente em múltiplas funções do binário.</p>
       <p>O binário também invoca a API nativa do Windows para troca de wallpaper (constante <code>SPI_SETDESKWALLPAPER</code>), reforçando visualmente a notificação de comprometimento independentemente de a vítima abrir a nota.</p>
 
@@ -404,7 +388,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <figcaption><strong>Fig. 23 —</strong> evidência do mecanismo de defacement.</figcaption>
       </figure>
 
-      <h3>4.10 Autodestruição</h3>
+      <h3>4.9 Autodestruição</h3>
       <p>O binário dropa um script VBScript em uma pasta temporária e o executa via <code>wscript.exe //B //Nologo</code> — flags que suprimem diálogos de erro e o banner do Windows Script Host. Esse é o padrão clássico de autodestruição em Windows: como um processo não pode deletar o próprio executável em execução, o script roda desacoplado, aguardando a liberação do handle para remover o binário original — dificultando extração da amostra por resposta a incidente pós-infecção.</p>
 
       <figure>
