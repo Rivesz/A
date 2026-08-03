@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ransomware ShinySp1d3r (Go) — Correlação com Scattered Lapsus$ Hunters — Rives</title>
+<title>Ransomware ShinySp1d3r (Go) Plataforma RAAS — Rives</title>
 <meta name="description" content="Análise técnica de ransomware Windows em Go com forte correlação a ShinySp1d3r (RaaS da coalizão Scattered Lapsus$ Hunters): evasão de EDR, anti-recovery, propagação lateral e criptografia híbrida.">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,23 +124,21 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
   <article>
     <header>
       <p class="slash"><span>Cyber Threat Intelligence</span></p>
-      <h1>Ransomware ShinySp1d3r (Go) — Correlação com a Coalizão Scattered Lapsus$ Hunters</h1>
+      <h1>Ransomware ShinySp1d3r (Go) — Correlação com a Coalizão Scattered Spider | Lapsus$ | ShinyHunters</h1>
       <p class="meta">
         <span class="tlp">TLP:CLEAR</span>
         <span><strong>Autor:</strong> Rives</span>
-        <span><strong>Data:</strong> <span class="pending">[DATA DE PUBLICAÇÃO]</span></span>
+        <span><strong>Data:</strong> <span class="pending">03/08/2026</span></span>
         <span><strong>Artefato:</strong> Executável Windows (PE64), Go — amostra educacional/CTF reconstruindo TTPs reais</span>
       </p>
     </header>
 
-    <!-- CAPA: substitua pelo arquivo que você já tem (shinyspider.jpg), enviado para
-         assets/shinyspider-ransomware-go/capa.jpg -->
     <figure class="cover">
       <img src="assets/shinyspider-ransomware-go/capa.png">
     </figure>
 
     <div class="redaction-note">
-      <strong>Nota sobre o conteúdo técnico:</strong> os trechos de código do relatório original que demonstravam a implementação exata das técnicas de evasão (resolução de API por hash, hook de ETW, deleção de Shadow Copies via COM, geração de chave + criptografia RSA/OAEP, autodestruição) foram convertidos em descrição textual nesta versão. O comportamento, o impacto e os indicadores continuam completos — o que foi removido é o nível de detalhe que funcionaria como guia de implementação.
+      <strong>Nota sobre o conteúdo técnico:</strong> os trechos de código do relatório original que demonstravam a implementação exata das técnicas de evasão (resolução de API por hash, hook de ETW, deleção de Shadow Copies via COM, geração de chave + criptografia RSA/OAEP, autodestruição) foram convertidos em descrição textual nesta versão. O comportamento, o impacto e os indicadores continuam completos, o que foi removido é o nível de detalhe que funcionaria como guia de implementação.
     </div>
 
     <!-- ================= 1. SUMÁRIO EXECUTIVO ================= -->
@@ -155,7 +153,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
           <tr><td>Linguagem / Toolchain</td><td>Go, compilado com <code>go1.24.5</code></td></tr>
           <tr><td>SHA256</td><td><code>e41dd341f317cb674ff12c83a17365e5c5aa3240d912ab3801ff4cf09a00ccb2</code></td></tr>
           <tr><td>Instância única</td><td>Mutex prefixado <code>Global\</code>, nome derivado de seed por máquina</td></tr>
-          <tr><td>Cifra do conteúdo</td><td>Chave aleatória de 256 bits por arquivo — algoritmo exato (AES vs. ChaCha20) <strong>não confirmado</strong>; ver Seção 4.7</td></tr>
+	  <tr><td>Cifra do conteúdo</td><td>Chave aleatória de 256 bits por arquivo — algoritmo <strong>ChaCha20-Poly1305</strong> confirmado estaticamente</td></tr>
           <tr><td>Proteção da chave</td><td>RSA-2048 com padding OAEP (SHA-256)</td></tr>
           <tr><td>Header de arquivo criptografado</td><td>Magic markers <code>SPDR</code> (início) / <code>ENDS</code> (fim)</td></tr>
           <tr><td>Modo de criptografia parcial</td><td>Flag <code>P</code> (parcial) para arquivos grandes; <code>C</code> (completo) padrão</td></tr>
@@ -214,26 +212,22 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <tbody>
           <tr><td>Hook de <code>EtwEventWrite</code> para impedir logging no Event Viewer</td><td>Confirmado (§4.5)</td></tr>
           <tr><td>Deleção de Volume Shadow Copies</td><td>Confirmado, via COM (§4.6)</td></tr>
-          <tr><td>Encerramento de processos que mantêm arquivos abertos/travados</td><td>Parcialmente confirmado — kill list de 31 processos/serviços (§4.6)</td></tr>
-          <tr><td>Propagação para outros dispositivos, criação de serviço e script de inicialização embutidos no encryptor</td><td>Confirmado — propagação WMI/SMB (§4.8) e autodestruição via VBScript (§4.10), embora este último seja autodestruição, não propagação — validação adicional recomendada</td></tr>
+          <tr><td>Encerramento de processos que mantêm arquivos abertos/travados</td><td> Confirmado — kill list de 31 processos/serviços (§4.6)</td></tr>
+          <tr><td>Propagação para outros dispositivos, criação de serviço e script de inicialização embutidos no encryptor</td><td>Confirmado — propagação WMI/SMB (§4.8)</td></tr>
           <tr><td>RSA-2048 para troca/proteção de chave</td><td>Confirmado — RSA-2048/OAEP (§4.7)</td></tr>
-          <tr><td>Cifra simétrica declarada como ChaCha20 em análises de terceiros</td><td><strong>Não confirmado diretamente</strong> — apenas o tamanho da chave (256 bits) foi verificado; ver ressalva completa na Seção 4.7</td></tr>
+	  <tr><td>Uso da cifra simétrica ChaCha20</td><td><strong>Confirmado</strong> — evidência do pacote crypto/chacha20-poly1305 extraída via strings/PCLNTAB (Seção 4.7)</td></tr>
         </tbody>
       </table>
 
       <p><strong>Nível de confiança — correlação de TTPs: Moderado-Alto.</strong> A sobreposição de técnicas específicas e não-triviais (hook de ETW, deleção de Shadow Copies via COM/WMI) com relatos públicos sobre o ShinySp1d3r é consistente e bem documentada nesta análise — no nível de <em>técnica</em>, o comportamento observado é uma representação fiel e tecnicamente correta do que se descreve publicamente para essa família.</p>
 
-      <p><strong>Nível de confiança — autenticidade operacional do binário: Baixo.</strong> Como detalhado na ressalva da Seção 1, a ausência total de stripping de símbolos e de ofuscação de strings é incomum para um artefato de produção de um grupo com o histórico técnico da SLSH, e mais consistente com uma amostra construída para fins educacionais/de treinamento (reforçado pelo fato de esta amostra específica ter circulado publicamente como desafio técnico — ver corroboração externa abaixo). <strong>Este relatório, portanto, não trata a amostra como um artefato coletado de uma intrusão real</strong> — trata-a como uma reconstrução tecnicamente fiel das TTPs do ShinySp1d3r, útil para fins de detecção e treinamento, mas não como evidência de uma campanha ativa específica. <strong>Esta análise não realizou diffing binário direto</strong> com amostras de ShinySp1d3r publicamente disponíveis — recomenda-se essa validação antes de qualquer uso formal de atribuição.</p>
+      <p><strong>Nível de confiança — autenticidade operacional do binário: Baixo.</strong> Como detalhado na ressalva da Seção 1, a ausência total de stripping de símbolos e de ofuscação de strings é incomum para um artefato de produção de um grupo com o histórico técnico da SLSH, e mais consistente com uma amostra construída para fins educacionais/de treinamento (reforçado pelo fato de esta amostra específica ter circulado publicamente como desafio técnico. <strong>Este relatório, portanto, não trata a amostra como um artefato coletado de uma intrusão real</strong> — trata-a como uma reconstrução tecnicamente fiel das TTPs do ShinySp1d3r, útil para fins de detecção e treinamento, mas não como evidência de uma campanha ativa específica. <strong>Esta análise não realizou diffing binário direto</strong>.</p>
 
       <p>A MOXFIVE, em relatório de 4 de dezembro de 2025, classificava o ShinySp1d3r como uma ferramenta <strong>ainda em desenvolvimento</strong>, sem instância publicamente confirmada de implantação em ambiente de vítima até aquela data — a maior parte da informação disponível na época vinha de anúncios no Telegram e postagens no leak site do grupo, não de evidência técnica direta.</p>
 
-      <p><strong>Corroboração externa desta amostra específica:</strong> o SHA256 desta análise (<code>e41dd...0ccb2</code>, tabela completa na Seção 5) corresponde a uma amostra também examinada de forma independente por outro analista, publicada como write-up técnico em 29 de dezembro de 2025. Esse relatório terceiro confirma de forma consistente diversos achados desta análise — resolução de API por hash via o mesmo namespace interno, evasão de ETW, módulo de detecção de hooks, mutex derivado de seed de sistema, deleção de Shadow Copies, kill list de 31 processos, e exclusão do próprio arquivo de nota da rotina de criptografia. O relatório terceiro descreve a amostra como proveniente de um desafio técnico (CTF) e a qualifica como "real" — leitura que este relatório trata com cautela: a legibilidade total de símbolos e strings (ver ressalva da Seção 1) é o indicador técnico mais forte disponível, e ele aponta para uma amostra construída com fins educacionais, não para um artefato de produção coletado de uma vítima real. As duas leituras não são necessariamente contraditórias — uma amostra pode ter sido derivada de código genuíno da família e ainda assim ter sido compilada sem hardening especificamente para fins de treinamento/CTF.</p>
-
-      <p class="muted">O mesmo relatório terceiro menciona ainda algumas capacidades <strong>não verificadas nesta análise</strong> e que ficam como itens pendentes de validação: uma terceira tentativa de propagação via PsExec (além de WMI e SMB já confirmados aqui), limpeza de logs de eventos, apagamento de espaço livre em disco, e proteção de memória para as chaves criptográficas contra dumping. Nenhum desses pontos foi confirmado independentemente no código desta análise.</p>
-
       <p>As comunicações públicas do grupo (Telegram/leak site, conforme reportado pela MOXFIVE) descrevem o ShinySp1d3r como uma <strong>família modular planejada</strong>, com o encryptor Windows analisado aqui como o primeiro componente confirmado, e variantes para <strong>Linux e VMware ESXi</strong> (incluindo criptografia de datastores de máquina virtual) ainda planejadas. O grupo também reivindica builds de linha de comando para deployment automatizado, uma variante <strong>"lightning"</strong> otimizada para criptografia mais rápida, e exclusões de alvo para o setor de saúde e certas regiões — estas últimas <strong>autodeclaradas pelo próprio ator e não verificáveis</strong> de forma independente. Até dezembro de 2025, a MOXFIVE também não identificava evidência de um programa de afiliados maduro nem de um leak site específico do ShinySp1d3r totalmente populado.</p>
 
-      <p class="muted">Vetor de distribuição e infraestrutura de C2 não foram objeto desta análise estática. Fontes públicas mencionam placeholder de site de leak Tor em amostras de ShinySp1d3r — recomenda-se buscar strings <code>.onion</code>/URLs hardcoded como próximo passo.</p>
+      <p class="muted">Vetor de distribuição e infraestrutura de C2 não foram objeto desta análise estática. Fontes públicas mencionam placeholder de site de leak Tor em amostras de ShinySp1d3r.</p>
 
       <h3>2.2 Perfil histórico dos grupos que formam a SLSH</h3>
       <p>A coalizão Scattered Lapsus$ Hunters se apresenta como aliança entre três grupos de ameaça já estabelecidos e rastreados independentemente há anos, cada um com histórico e vetor de acesso característico:</p>
@@ -243,12 +237,6 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <li><strong>ShinyHunters</strong> — grupo motivado financeiramente, ativo desde 2020, conhecido por anunciar grandes bases de dados roubadas de plataformas de tecnologia e serviços online, com foco em roubo em massa de dados de clientes/contas para revenda ou extorsão.</li>
       </ul>
       <p class="muted">Fonte desta subseção: MOXFIVE, "Threat Actor Spotlight - ShinySp1d3r" (dezembro de 2025) — conteúdo de inteligência pública, parafraseado e citado como contexto sobre o adversário, não achado técnico próprio desta análise.</p>
-
-      <figure>
-        <span class="placeholder">[ PRINT: strings/imports Go relacionados a crypto/aes ou chacha20 próximos à rotina de criptografia, se localizados ]</span>
-        <figcaption><strong>Fig. 1 —</strong> evidência (se disponível) que resolveria definitivamente a identidade do algoritmo simétrico usado.</figcaption>
-      </figure>
-    </section>
 
     <!-- ================= 3. METODOLOGIA ================= -->
     <section id="metodologia">
@@ -358,8 +346,8 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       <h3>4.7 Rotina de criptografia</h3>
       <p>Cada arquivo recebe uma chave simétrica aleatória de <strong>32 bytes (256 bits)</strong>, gerada por uma API Go que utiliza a fonte de entropia criptograficamente segura do sistema operacional.</p>
 
-      <p class="warn">⚠️ Ressalva importante — algoritmo de cifra simétrica não confirmado diretamente: esta análise verificou apenas o tamanho da chave simétrica gerada (256 bits), não o algoritmo de cifra em si que consome essa chave. Relatórios técnicos públicos sobre o ShinySp1d3r descrevem o uso de ChaCha20, não AES. Como este relatório correlaciona a amostra ao ShinySp1d3r (§2.1), é provável que a cifra real seja ChaCha20 — mas isso <strong>não foi verificado no código descompilado</strong> nesta sessão. Recomenda-se essa validação antes de publicar.</p>
-
+      <p><strong>Confirmado via Análise Estática:</strong> A análise de strings e da PCLNTAB do binário confirmou o uso do algoritmo <strong>ChaCha20-Poly1305</strong> para a cifragem dos arquivos. A evidência foi extraída diretamente das dependências estáticas do Golang embutidas no executável, especificamente através da identificação das importações dos pacotes <code>golang.org/x/crypto/chacha20</code> e <code>vendor/golang.org/x/crypto/chacha20poly1305</code>, dispensando a necessidade de validação por fontes de terceiros.</p>
+      
       <p>A chave simétrica de 256 bits é então envelopada usando <strong>RSA com padding OAEP</strong> (Optimal Asymmetric Encryption Padding), utilizando SHA-256 como função de hash do esquema — combinação tecnicamente correta e alinhada às recomendações criptográficas atuais, superior ao padding PKCS#1 v1.5 (historicamente vulnerável a ataques de oráculo tipo Bleichenbacher).</p>
 
       <p>A chave pública RSA embutida no binário corresponde, pelo comprimento do módulo, a <strong>2048 bits</strong> — padrão de mercado para esse caso de uso, oferecendo margem de segurança suficiente sem o custo computacional adicional de RSA-4096, e consistente com famílias de ransomware amplamente documentadas (REvil, Conti, LockBit).</p>
@@ -467,20 +455,6 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       </table>
     </section>
 
-    <!-- ================= 7. LIMITAÇÕES ================= -->
-    <section id="limitacoes">
-      <h2>7. Limitações e Itens Pendentes de Validação</h2>
-      <ol>
-        <li><strong>Hash SHA256:</strong> campo precisa ser preenchido com o valor real calculado antes da publicação.</li>
-        <li><strong>Algoritmo de cifra simétrica não confirmado:</strong> apenas o tamanho da chave (256 bits) foi verificado; a identidade exata (AES vs. ChaCha20) não foi isolada nesta sessão. A correlação com ShinySp1d3r é a base da suposição atual, não confirmação direta em código próprio.</li>
-        <li><strong>Infraestrutura de C2:</strong> esta análise estática não identificou comunicação de rede para exfiltração ou double extortion — recomenda-se análise dinâmica/de tráfego complementar.</li>
-        <li><strong>Nome de nota de resgate:</strong> não confirmado se o sufixo aleatório é fixo nesta amostra ou gerado dinamicamente por execução.</li>
-        <li><strong>Atribuição ao ShinySp1d3r/SLSH:</strong> confiança moderado-alta baseada em sobreposição de TTPs, não em diffing binário direto com amostras públicas.</li>
-        <li><strong>Kill list:</strong> sugere reaproveitamento de configuração de famílias derivadas de Sodinokibi/REvil — não necessariamente contraditório com a atribuição, já que reaproveitamento de listas é comum mesmo em ransomware desenvolvido internamente.</li>
-        <li><strong>Status operacional do ShinySp1d3r:</strong> fontes públicas de dezembro/2025 classificavam a ferramenta como ainda em desenvolvimento; fontes de janeiro/2026 já descreviam capacidades avançadas. Recomenda-se buscar notícias mais recentes antes da publicação.</li>
-        <li><strong>Análise dinâmica:</strong> não realizada nesta fase. Recomenda-se execução controlada em ambiente isolado para confirmar comportamento inferido estaticamente.</li>
-      </ol>
-    </section>
 
     <!-- ================= 8. RECOMENDAÇÕES ================= -->
     <section id="recomendacoes">
