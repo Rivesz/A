@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ransomware ShinySp1d3r (Go) Plataforma RAAS — Rives</title>
-<meta name="description" content="Análise técnica de ransomware Windows em Go com forte correlação a ShinySp1d3r (RaaS da coalizão Scattered Lapsus$ Hunters): evasão de EDR, anti-recovery, propagação lateral e criptografia híbrida.">
+<meta name="description" content="Análise técnica de ransomware Windows em Go com forte correlação a ShinySp1d3r (RaaS da coalizão Scattered Lapsus$ Hunters): evasão de EDR, anti-recovery, propagação lateral, criptografia híbrida e artefatos DFIR.">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -295,18 +295,22 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <img src="assets/shinyspider-ransomware-go/fig8.png" alt="Decompiler de main.generateMutexName mostrando o prefixo Global\">
         <figcaption><strong>Fig. 8 —</strong> evidência da derivação do nome do mutex.</figcaption>
       </figure>
-      
+      <figure>
+        <span class="placeholder">[ PRINT: checkSingleInstance comparando contra ERROR_ALREADY_EXISTS ]</span>
+        <figcaption><strong>Fig. 9 —</strong> verificação de instância única.</figcaption>
+      </figure>
+
       <h3>4.5 Módulos de evasão de defesa</h3>
       <p>Três módulos distintos, todos sob o mesmo prefixo de namespace interno, foram identificados como dedicados à evasão de EDR/telemetria: <strong>(a)</strong> resolução de API do Windows por hash, evitando referência direta a nomes de função na Import Table do PE; <strong>(b)</strong> um hook completo sobre a função de emissão de eventos ETW (Event Tracing for Windows) de <code>ntdll.dll</code>, amplamente consumida por EDRs para monitoramento comportamental; <strong>(c)</strong> uma rotina de contra-instrumentação que verifica periodicamente, a cada 500ms, se as próprias APIs em uso pelo malware foram "hookadas" por ferramentas de instrumentação/EDR.</p>
       <p>A modularização consistente sob um namespace comum sugere um framework de evasão interno e reutilizável do(s) desenvolvedor(es), não código improvisado ad-hoc para esta campanha específica.</p>
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig10.png" alt="Symbol Tree mostrando o módulo HCWin/etwevasion e HookedEtwEventWrite">
-        <figcaption><strong>Fig. 9 —</strong> evidência do módulo de evasão de telemetria.</figcaption>
+        <figcaption><strong>Fig. 10 —</strong> evidência do módulo de evasão de telemetria.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig11.png" alt="HCWin/hookshield.(*HookDetector).monitoringLoop usando time.NewTicker">
-        <figcaption><strong>Fig. 10 —</strong> evidência da rotina de contra-instrumentação (loop de monitoramento de hooks).</figcaption>
+        <figcaption><strong>Fig. 11 —</strong> evidência da rotina de contra-instrumentação (loop de monitoramento de hooks).</figcaption>
       </figure>
 
       <h3>4.6 Preparação anti-recovery</h3>
@@ -328,15 +332,15 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig12.png" alt="Assinatura de HCWin/shadow.DeleteShadowCopies usando go-ole">
-        <figcaption><strong>Fig. 11 —</strong> evidência do mecanismo de anti-recovery.</figcaption>
+        <figcaption><strong>Fig. 12 —</strong> evidência do mecanismo de anti-recovery.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig13.png" alt="Decompiler de main.killBlacklistedServices mostrando contador 0x1F (31)">
-        <figcaption><strong>Fig. 12 —</strong> confirmação do tamanho da kill list (0x1F = 31).</figcaption>
+        <figcaption><strong>Fig. 13 —</strong> confirmação do tamanho da kill list (0x1F = 31).</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig14.png" alt="Strings $windows.~bt, $windows.~ws, bootfont.bin no listing">
-        <figcaption><strong>Fig. 13 —</strong> evidência das exclusões de bootabilidade.</figcaption>
+        <figcaption><strong>Fig. 14 —</strong> evidência das exclusões de bootabilidade.</figcaption>
       </figure>
 
       <h3>4.7 Rotina de criptografia</h3>
@@ -356,23 +360,23 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig15.png" alt="Chamadas crypto/rand.Read gerando valores aleatórios de 32 e 12 bytes">
-        <figcaption><strong>Fig. 14 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.7.</figcaption>
+        <figcaption><strong>Fig. 15 —</strong> evidência da geração de chave por arquivo (32 bytes/256 bits). O crop também mostra uma segunda chamada gerando 12 bytes — possível nonce, relevante para a ressalva sobre o algoritmo simétrico da Seção 4.7.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Chamada de crypto/rsa.EncryptOAEP com hash SHA-256">
-        <figcaption><strong>Fig. 15 —</strong> evidência da proteção da chave simétrica.</figcaption>
+        <figcaption><strong>Fig. 16 —</strong> evidência da proteção da chave simétrica.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig16.png" alt="Carregamento da chave pública RSA embutida">
-        <figcaption><strong>Fig. 16 —</strong> evidência do módulo RSA de 2048 bits.</figcaption>
+        <figcaption><strong>Fig. 17 —</strong> evidência do módulo RSA de 2048 bits.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig18.png" alt="Constantes 0x52445053 (SPDR) e 0x53444e45 (ENDS) em main.encryptFile">
-        <figcaption><strong>Fig. 17 —</strong> evidência do header customizado do arquivo criptografado. O mesmo crop também mostra a lógica de decisão do modo parcial/completo (P/C).</figcaption>
+        <figcaption><strong>Fig. 18 —</strong> evidência do header customizado do arquivo criptografado. O mesmo crop também mostra a lógica de decisão do modo parcial/completo (P/C).</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig19.png" alt="Decompiler de main.isValidExtension: param_2 == 9 e checagem de '.'">
-        <figcaption><strong>Fig. 18 —</strong> evidência do marcador de arquivo já processado.</figcaption>
+        <figcaption><strong>Fig. 19 —</strong> evidência do marcador de arquivo já processado.</figcaption>
       </figure>
 
       <h3>4.8 Propagação lateral</h3>
@@ -380,11 +384,11 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig20.png" alt="String identificando WMI como protocolo de execução remota">
-        <figcaption><strong>Fig. 19 —</strong> evidência da tentativa primária via WMI.</figcaption>
+        <figcaption><strong>Fig. 20 —</strong> evidência da tentativa primária via WMI.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig21.png" alt="HCWin/shares.isSMBPortOpen usando net.DialTimeout na porta 445">
-        <figcaption><strong>Fig. 20 —</strong> evidência do fallback via SMB.</figcaption>
+        <figcaption><strong>Fig. 21 —</strong> evidência do fallback via SMB.</figcaption>
       </figure>
 
       <h3>4.9 Nota de resgate e defacement</h3>
@@ -393,11 +397,11 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig22.png" alt="XREFs da string R3ADME_lVks5fYe.txt referenciada em múltiplas funções">
-        <figcaption><strong>Fig. 21 —</strong> confirmação do reuso consistente do nome da nota.</figcaption>
+        <figcaption><strong>Fig. 22 —</strong> confirmação do reuso consistente do nome da nota.</figcaption>
       </figure>
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig23.png" alt="String SystemParametersInfoW referenciada por main.changeWallpaper">
-        <figcaption><strong>Fig. 22 —</strong> evidência do mecanismo de defacement.</figcaption>
+        <figcaption><strong>Fig. 23 —</strong> evidência do mecanismo de defacement.</figcaption>
       </figure>
 
       <h3>4.10 Autodestruição</h3>
@@ -405,7 +409,7 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
 
       <figure>
         <img src="assets/shinyspider-ransomware-go/fig24.png" alt="String wscript.exe //B //Nologo em main.deleteSelfViaWMI">
-        <figcaption><strong>Fig. 23 —</strong> evidência do mecanismo de autodestruição.</figcaption>
+        <figcaption><strong>Fig. 24 —</strong> evidência do mecanismo de autodestruição.</figcaption>
       </figure>
     </section>
 
@@ -451,10 +455,115 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       </table>
     </section>
 
+    <!-- ================= 7. ARTEFATOS DFIR E REGRAS DE DETECÇÃO ================= -->
+    <section id="dfir-rules">
+      <h2>7. Artefatos DFIR, Recuperação e Engenharia de Detecção</h2>
+      <p>Para equipes de Blue Team (CSIRT/SOC), os achados da análise reversa foram traduzidos em inteligência acionável para caça a ameaças (Threat Hunting), triagem de máquinas comprometidas e engenharia de detecção.</p>
 
-    <!-- ================= 7. RECOMENDAÇÕES ================= -->
+      <h3>7.1 Guia de Triage e Artefatos (DFIR)</h3>
+      <table class="ioc-table">
+        <thead><tr><th>Categoria</th><th>Artefato / Comportamento Esperado</th><th>Onde Procurar (Logs/Disco)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Movimento Lateral (WMI)</strong></td>
+            <td>Autenticação remota seguida de execução de processo via WMI (<code>WmiPrvSE.exe</code>).</td>
+            <td>Windows Event Log: <code>Security (EID 4624, Logon Type 3)</code> correlacionado com <code>Microsoft-Windows-WMI-Activity/Operational (EID 5861)</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Discovery (SMB)</strong></td>
+            <td>Múltiplas conexões de rede curtas (scan) originadas do host infectado para a porta <code>TCP/445</code> de outros servidores.</td>
+            <td>Windows Event Log: <code>Security (EID 5156)</code> ou telemetria de firewall de rede/NetFlow.</td>
+          </tr>
+          <tr>
+            <td><strong>Anti-Recovery (VSS)</strong></td>
+            <td>Uso de classes COM para deletar Shadow Copies invisivelmente, sem spawn do <code>vssadmin.exe</code>.</td>
+            <td>Como não há linha de comando do VSSAdmin, monitore WMI via Sysmon: <code>Event ID 19 e 20</code> e chamadas COM suspeitas a <code>Win32_ShadowCopy</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Defacement</strong></td>
+            <td>Alteração do registro de Wallpaper via API <code>SystemParametersInfoW</code>.</td>
+            <td>Registro: alterações na chave <code>HKCU\Control Panel\Desktop\Wallpaper</code> executadas por processos atípicos.</td>
+          </tr>
+          <tr>
+            <td><strong>Autodestruição</strong></td>
+            <td>Drop de script <code>.vbs</code> e execução silenciosa via <code>wscript.exe</code>.</td>
+            <td>Disco: arquivos <code>.vbs</code> recentes no <code>%TEMP%</code> (verificar USN Journal se já deletado). Logs: <code>Security (EID 4688)</code> ou Sysmon <code>(EID 1)</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><strong>Estratégia de Recuperação:</strong> A deleção de Volume Shadow Copies via COM bypassa ferramentas de monitoramento baseadas puramente em CLI. A recuperação via VSS local não será viável pós-infecção. A resposta deve focar em restauração a partir de <strong>backups offline ou imutáveis</strong> (tape/cloud isolada).</p>
+
+      <h3>7.2 Regras de Detecção (YARA e Sigma)</h3>
+      
+      <h4>Regra YARA (Detecção de Binário - Estática)</h4>
+      <p class="muted">Focada em identificar o executável compilado do ShinySp1d3r em disco ou memória, baseando-se nos artefatos da seção 4.</p>
+      <pre><code>rule Ransomware_Win_ShinySp1d3r_Go {
+    meta:
+        description = "Detecta o executável do ransomware ShinySp1d3r (Golang)"
+        author = "Rives"
+        date = "2026-08-03"
+        tlp = "CLEAR"
+        reference = "Análise RaaS Scattered Lapsus$ Hunters"
+
+    strings:
+        // Artefatos do binário
+        $go_build = "go1.24" ascii
+        $note_name = "R3ADME_lVks5fYe.txt" ascii wide
+        
+        // Marcadores de Criptografia
+        $magic_start = "SPDR" ascii
+        $magic_end = "ENDS" ascii
+        
+        // TTP: Comando de Autodestruição
+        $vbs_wscript = "wscript.exe //B //Nologo" ascii wide
+        
+        // TTP: Bibliotecas WMI/COM em Go
+        $go_ole1 = "github.com/go-ole/go-ole" ascii
+        $go_wmi1 = "WbemScripting.SWbemLocator" ascii wide
+
+    condition:
+        uint16(0) == 0x5a4d and // Valida se é um executável PE (MZ)
+        filesize < 20MB and
+        (
+            $note_name or 
+            ($magic_start and $magic_end) or
+            ($go_build and $vbs_wscript and 1 of ($go_*))
+        )
+}</code></pre>
+
+      <h4>Regra Sigma (Comportamento de Autodestruição - DFIR)</h4>
+      <p class="muted">Focada na detecção de comportamento (Telemetry/Logs), identificando o método exato de evasão e autodestruição utilizado pela amostra (T1070.004).</p>
+      <pre><code>title: ShinySp1d3r Ransomware Self-Deletion Behavior
+id: a1b2c3d4-e5f6-7890-abcd-1234567890ab
+status: experimental
+description: Detecta a execução silenciosa do wscript.exe, um comportamento utilizado pelo ShinySp1d3r para rodar um VBScript de autodestruição do binário original.
+author: Rives
+date: 2026/08/03
+tags:
+    - attack.defense_evasion
+    - attack.t1070.004
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_process:
+        Image|endswith: '\wscript.exe'
+    selection_flags:
+        CommandLine|contains|all:
+            - '//B'
+            - '//Nologo'
+    selection_temp:
+        CommandLine|contains: '\Temp\'
+    condition: selection_process and selection_flags and selection_temp
+falsepositives:
+    - Scripts legítimos de administração de sistemas (verificar parent process).
+level: high</code></pre>
+    </section>
+
+    <!-- ================= 8. RECOMENDAÇÕES ================= -->
     <section id="recomendacoes">
-      <h2>7. Recomendações de Detecção e Mitigação</h2>
+      <h2>8. Recomendações de Detecção e Mitigação</h2>
       <ul>
         <li><strong>Monitoramento de ETW/EDR:</strong> alertar sobre tentativas de patch/hook em <code>ntdll!EtwEventWrite</code> a partir de processos não confiáveis.</li>
         <li><strong>Monitoramento de deleção de Shadow Copies via COM/WMI:</strong> soluções que monitoram apenas linha de comando não capturam esta amostra — monitore também chamadas WMI para classes relacionadas a Shadow Copy.</li>
@@ -462,25 +571,6 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
         <li><strong>Detecção de propagação:</strong> monitorar varreduras de porta 445 originadas de hosts não administrativos, combinadas com atividade WMI anômala.</li>
         <li><strong>Backup offline/imutável:</strong> como o ransomware deleta Shadow Copies programaticamente, backups dependentes exclusivamente de VSS são insuficientes.</li>
       </ul>
-
-      <p><strong>Regra YARA (esqueleto — refine com bytes/strings específicos da amostra):</strong></p>
-      <pre><code>rule ShinySp1d3r_Golang_Framework
-{
-    meta:
-        description = "Detecta possiveis variantes de ShinySp1d3r (SLSH)"
-        author = "Rives"
-        date = "2026-07-31"
-        reference = "Correlacao com relatos publicos de ShinySp1d3r/SLSH -- ver Secao 2.1"
-
-    strings:
-        $note = "R3ADME_"
-        $header_start = "SPDR"
-        $header_end = "ENDS"
-        $vbs_cmd = "wscript.exe //B //Nologo"
-
-    condition:
-        2 of them
-}</code></pre>
 
       <p><strong>Threat hunting:</strong> buscar outras amostras reutilizando a mesma chave pública RSA-2048 hardcoded — reuso de par de chaves entre variantes é forte indicativo de amostras irmãs da mesma campanha/operador. Correlacionar também contra o site de leak/extorsão público associado ao SLSH.</p>
       <p><strong>Monitoramento de ator:</strong> dado o padrão de recrutamento agressivo de insiders documentado para o SLSH (engenharia social visando funcionários com acesso privilegiado, incluindo impersonation de helpdesk de TI), recomenda-se reforçar treinamento de conscientização e revisão de processos de verificação de identidade para resets de credenciais/MFA — vetor de acesso inicial historicamente associado a Scattered Spider.</p>
@@ -496,9 +586,9 @@ footer.bottom{ border-top:1px solid var(--line); padding:var(--space-m); text-al
       </ul>
     </section>
 
-    <!-- ================= 8. CONCLUSÃO ================= -->
+    <!-- ================= 9. CONCLUSÃO ================= -->
     <section id="conclusao">
-      <h2>8. Conclusão</h2>
+      <h2>9. Conclusão</h2>
       <p>O ransomware analisado demonstra um nível de maturidade técnica consideravelmente superior ao observado em amostras de malware comercial/builder-based: criptografia híbrida corretamente implementada, um framework coeso e modular de evasão de defesas, mecanismo de propagação lateral redundante, e preparação anti-recovery abrangente.</p>
       <p>A ausência de stripping de símbolos e de ofuscação de strings, no entanto, é um indicador técnico forte de que este binário específico é uma <strong>amostra educacional/de treinamento</strong> — provavelmente construída para tornar essas técnicas auditáveis e ensináveis — e não um artefato coletado de uma intrusão real. Essa distinção não diminui a periculosidade do conteúdo: cada técnica documentada (evasão de ETW, deleção de Shadow Copies via COM/WMI, criptografia híbrida RSA-2048/OAEP + chave de 256 bits, propagação lateral WMI/SMB) é uma implementação real, funcional e tecnicamente correta, com o mesmo potencial de dano de uma amostra operacional caso reproduzida fora de um contexto controlado.</p>
       <p>A sobreposição consistente de TTPs distintivos com relatos técnicos públicos — especialmente o hook de telemetria ETW e a deleção de Shadow Copies via COM/WMI — sustenta a correlação desta amostra às técnicas descritas para o <strong>ShinySp1d3r</strong>, o RaaS em desenvolvimento pela coalizão <strong>Scattered Lapsus$ Hunters</strong>, no nível de <em>técnica</em>. Essa correlação não deve ser lida como atribuição de uma campanha ativa a essa amostra específica, que permanece <strong>não confirmada como artefato operacional</strong> sem diffing binário direto contra amostras públicas já catalogadas.</p>
